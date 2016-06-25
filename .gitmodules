@@ -1,0 +1,6 @@
+[submodule "date"]
+	path = date
+	url = https://github.com/HowardHinnant/date
+[submodule "Catch"]
+	path = Catch
+	url = https://github.com/philsquared/Catch

@@ -1,2 +1,2 @@
 * chrono_date
-Playground for the chrono date library proposed by Howard Hinnant.
+Playground for the chrono date library [[http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0355r0.html][proposed for standardization.]]

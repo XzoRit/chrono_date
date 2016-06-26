@@ -23,9 +23,9 @@ TEST_CASE("calc_age")
     const auto birth = 2013_y/jul/14;
     const auto diff = sys_days{today} - sys_days{birth};
 
-    CHECK(years{2}.count() == floor<years>(diff).count());
-    CHECK(years{3}.count() == round<years>(diff).count());
-    CHECK(years{3}.count() == ceil <years>(diff).count());
+    CHECK(years{2}.count() == floor	   <years>(diff).count());
+    CHECK(years{3}.count() == round	   <years>(diff).count());
+    CHECK(years{3}.count() == ceil 	   <years>(diff).count());
     CHECK(years{2}.count() == duration_cast<years>(diff).count());
 
     std::cout << duration<float, years::period>{diff}.count() << '\n';
@@ -93,49 +93,49 @@ TEST_CASE("floor, ceil, round, cast")
 {
     SECTION("durations")
     {
-	CHECK(1s == ceil <seconds>(750ms));
-	CHECK(0s == floor<seconds>(750ms));
-	CHECK(1s == round<seconds>(750ms));
+	CHECK(1s == ceil 	 <seconds>(750ms));
+	CHECK(0s == floor	 <seconds>(750ms));
+	CHECK(1s == round	 <seconds>(750ms));
 	CHECK(0s == duration_cast<seconds>(750ms));
 
-	CHECK(1s == ceil <seconds>(250ms));
-	CHECK(0s == floor<seconds>(250ms));
-	CHECK(0s == round<seconds>(250ms));
+	CHECK(1s == ceil 	 <seconds>(250ms));
+	CHECK(0s == floor	 <seconds>(250ms));
+	CHECK(0s == round	 <seconds>(250ms));
 	CHECK(0s == duration_cast<seconds>(250ms));
 
-	CHECK(0s  == ceil <seconds>(-750ms));
-	CHECK(-1s == floor<seconds>(-750ms));
-	CHECK(-1s == round<seconds>(-750ms));
-	CHECK(0s  == duration_cast<seconds>(-750ms));
+	CHECK( 0s == ceil 	  <seconds>(-750ms));
+	CHECK(-1s == floor	  <seconds>(-750ms));
+	CHECK(-1s == round	  <seconds>(-750ms));
+	CHECK( 0s == duration_cast<seconds>(-750ms));
 
-	CHECK(0s  == ceil <seconds>(-250ms));
-	CHECK(-1s == floor<seconds>(-250ms));
-	CHECK(0s  == round<seconds>(-250ms));
-	CHECK(0s  == duration_cast<seconds>(-250ms));
+	CHECK( 0s == ceil 	  <seconds>(-250ms));
+	CHECK(-1s == floor	  <seconds>(-250ms));
+	CHECK( 0s == round	  <seconds>(-250ms));
+	CHECK( 0s == duration_cast<seconds>(-250ms));
     }
     SECTION("system_clock::time_point")
     {
 	using system_time = system_clock::time_point;
 
-	CHECK(1970_y/jan/2 == year_month_day{ceil <days>(system_time{15h})});
-	CHECK(1970_y/jan/1 == year_month_day{floor<days>(system_time{15h})});
-	CHECK(1970_y/jan/2 == year_month_day{round<days>(system_time{15h})});
+	CHECK(1970_y/jan/2 == year_month_day{ceil 	    <days>(system_time{15h})});
+	CHECK(1970_y/jan/1 == year_month_day{floor	    <days>(system_time{15h})});
+	CHECK(1970_y/jan/2 == year_month_day{round	    <days>(system_time{15h})});
 	CHECK(1970_y/jan/1 == year_month_day{time_point_cast<days>(system_time{15h})});
 
-	CHECK(1970_y/jan/2 == year_month_day{ceil <days>(system_time{9h})});
-	CHECK(1970_y/jan/1 == year_month_day{floor<days>(system_time{9h})});
-	CHECK(1970_y/jan/1 == year_month_day{round<days>(system_time{9h})});
+	CHECK(1970_y/jan/2 == year_month_day{ceil 	    <days>(system_time{9h})});
+	CHECK(1970_y/jan/1 == year_month_day{floor	    <days>(system_time{9h})});
+	CHECK(1970_y/jan/1 == year_month_day{round	    <days>(system_time{9h})});
 	CHECK(1970_y/jan/1 == year_month_day{time_point_cast<days>(system_time{9h})});
 
-	CHECK(1970_y/jan/1  == year_month_day{ceil <days>(system_time{-15h})});
-	CHECK(1969_y/dec/31 == year_month_day{floor<days>(system_time{-15h})});
-	CHECK(1969_y/dec/31 == year_month_day{round<days>(system_time{-15h})});
-	CHECK(1970_y/jan/1  == year_month_day{time_point_cast<days>(system_time{-15h})});
+	CHECK(1970_y/jan/ 1 == year_month_day{ceil 	     <days>(system_time{-15h})});
+	CHECK(1969_y/dec/31 == year_month_day{floor	     <days>(system_time{-15h})});
+	CHECK(1969_y/dec/31 == year_month_day{round	     <days>(system_time{-15h})});
+	CHECK(1970_y/jan/ 1 == year_month_day{time_point_cast<days>(system_time{-15h})});
 
-	CHECK(1970_y/jan/1  == year_month_day{ceil <days>(system_time{-9h})});
-	CHECK(1969_y/dec/31 == year_month_day{floor<days>(system_time{-9h})});
-	CHECK(1970_y/jan/1  == year_month_day{round<days>(system_time{-9h})});
-	CHECK(1970_y/jan/1  == year_month_day{time_point_cast<days>(system_time{-9h})});
+	CHECK(1970_y/jan/ 1 == year_month_day{ceil 	     <days>(system_time{-9h})});
+	CHECK(1969_y/dec/31 == year_month_day{floor	     <days>(system_time{-9h})});
+	CHECK(1970_y/jan/ 1 == year_month_day{round	     <days>(system_time{-9h})});
+	CHECK(1970_y/jan/ 1 == year_month_day{time_point_cast<days>(system_time{-9h})});
     }
 }
 
@@ -164,7 +164,7 @@ TEST_CASE("date-time")
 	const auto since_midnight = tp - date;
 	CHECK(since_midnight == 27200s);
 	const auto time = make_time(since_midnight);
-	CHECK(time.hours()   == 7h);
+	CHECK(time.hours()   ==  7h);
 	CHECK(time.minutes() == 33min);
 	CHECK(time.seconds() == 20s);
     }

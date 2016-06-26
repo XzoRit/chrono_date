@@ -169,3 +169,12 @@ TEST_CASE("date-time")
 	CHECK(time.seconds() == 20s);
     }
 }
+
+TEST_CASE("weekday")
+{
+    const auto ymw = year_month_weekday{2000_y/jan/1};
+    CHECK(ymw.weekday() == sat);
+    CHECK(ymw.index() == 1);
+    CHECK(ymw == 2000_y/jan/sat[1]);
+    CHECK(sys_days{1999_y/dec/last} == sys_days{1999_y/dec/fri[last]});
+}

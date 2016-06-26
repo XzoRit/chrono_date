@@ -19,7 +19,18 @@ static years calc_age(const year_month_day& today, const year_month_day& birth)
 
 TEST_CASE("calc_age")
 {
-    CHECK(years{3} == calc_age(2016_y/jul/23, 2013_y/jul/14));
+    const auto today = 2016_y/apr/17;
+    const auto birth = 2013_y/jul/14;
+    const auto diff = sys_days{today} - sys_days{birth};
+
+    CHECK(years{2}.count() == floor<years>(diff).count());
+    CHECK(years{3}.count() == round<years>(diff).count());
+    CHECK(years{3}.count() == ceil <years>(diff).count());
+    CHECK(years{2}.count() == duration_cast<years>(diff).count());
+
+    std::cout << duration<float, years::period>{diff}.count() << '\n';
+
+    CHECK(years{2}.count() == calc_age(today, birth).count());
 }
 
 TEST_CASE("date-days arithmetic")
@@ -29,7 +40,7 @@ TEST_CASE("date-days arithmetic")
 
 TEST_CASE("stream time_point")
 {
-    std::cout << std::chrono::system_clock::now();
+    std::cout << std::chrono::system_clock::now() << '\n';
 }
 
 TEST_CASE("year-month-last")

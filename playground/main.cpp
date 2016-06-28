@@ -40,7 +40,7 @@ TEST_CASE("date-days arithmetic")
 
 TEST_CASE("stream time_point")
 {
-    std::cout << std::chrono::system_clock::now() << '\n';
+    std::cout << system_clock::now() << '\n';
 }
 
 TEST_CASE("year-month-last")
@@ -177,4 +177,16 @@ TEST_CASE("weekday")
     CHECK(ymw.index() == 1);
     CHECK(ymw == 2000_y/jan/sat[1]);
     CHECK(sys_days{1999_y/dec/last} == sys_days{1999_y/dec/fri[last]});
+}
+
+TEST_CASE("today")
+{
+    const auto tp = system_clock::now();
+    const year_month_day ymd = floor<days>(tp);
+    const auto hms = make_time(tp - sys_days{ymd});
+    std::cout << ymd.year() << ymd.month() << ymd.day() << '\n'
+	      << hms.hours().count()
+	      << hms.minutes().count()
+	      << hms.seconds().count()
+	      << hms.subseconds().count() << '\n';
 }

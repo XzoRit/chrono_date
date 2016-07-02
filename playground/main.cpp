@@ -19,18 +19,22 @@ static years calc_age(const year_month_day& today, const year_month_day& birth)
 
 TEST_CASE("calc_age")
 {
-    const auto today = 2016_y/apr/17;
-    const auto birth = 2013_y/jul/14;
-    const auto diff = sys_days{today} - sys_days{birth};
-
-    CHECK(years{2}.count() == floor	   <years>(diff).count());
-    CHECK(years{3}.count() == round	   <years>(diff).count());
-    CHECK(years{3}.count() == ceil 	   <years>(diff).count());
-    CHECK(years{2}.count() == duration_cast<years>(diff).count());
-
-    std::cout << duration<float, years::period>{diff}.count() << '\n';
-
-    CHECK(years{2}.count() == calc_age(today, birth).count());
+    auto start = sys_days{2015_y/aug/20};
+    const auto end = start + days{3};
+    const auto birth = sys_days{2010_y/aug/21};
+    using float_years = duration<float, years::period>;
+    for(; start < end; start += days{1})
+    {
+	const auto diff = start - birth;
+	std::cout << "today: " << start << ' ' << "birthday: " << birth << '\n';
+	std::cout << "calc_age      " << calc_age    (start, birth).count() << '\n';
+	std::cout << "floor         " << floor        <years>(diff).count() << '\n';
+	std::cout << "round         " << round        <years>(diff).count() << '\n';
+	std::cout << "ceil          " << ceil         <years>(diff).count() << '\n';
+	std::cout << "duration_cast " << duration_cast<years>(diff).count() << '\n';
+	std::cout << "float years   " << float_years         {diff}.count() << '\n';
+    }
+    CHECK(years{5}.count() == calc_age(start, birth).count());
 }
 
 TEST_CASE("date-days arithmetic")

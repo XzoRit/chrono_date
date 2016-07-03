@@ -19,23 +19,38 @@ static years calc_age(const year_month_day& today, const year_month_day& birth)
 
 TEST_CASE("calc_age")
 {
-    auto start = sys_days{2015_y/aug/20};
-    const auto end = start + days{3};
+    using float_years = duration<double, years::period>;
+    auto today = sys_days{2015_y/aug/20};
     const auto birth = sys_days{2010_y/aug/21};
-    using float_years = duration<float, years::period>;
-    for(; start < end; start += days{1})
     {
-	const auto diff = start - birth;
-	std::cout << "today         " << start << '\n';
-	std::cout << "birthday      " << birth << '\n';
-	std::cout << "calc_age      " << calc_age    (start, birth).count() << '\n';
-	std::cout << "floor         " << floor        <years>(diff).count() << '\n';
-	std::cout << "round         " << round        <years>(diff).count() << '\n';
-	std::cout << "ceil          " << ceil         <years>(diff).count() << '\n';
-	std::cout << "duration_cast " << duration_cast<years>(diff).count() << '\n';
-	std::cout << "float years   " << float_years         {diff}.count() << "\n\n";
+	const auto diff = today - birth;
+	CHECK(years{4} == calc_age    (today, birth));
+	CHECK(years{4} == floor        <years>(diff));
+	CHECK(years{5} == round        <years>(diff));
+	CHECK(years{5} == ceil         <years>(diff));
+	CHECK(years{4} == duration_cast<years>(diff));
+	CHECK(float_years{4.996}.count() == Approx{float_years{diff}.count()}.epsilon(0.001));
     }
-    CHECK(years{5}.count() == calc_age(start, birth).count());
+    today += days{1};
+    {
+	const auto diff = today - birth;
+	CHECK(years{5} == calc_age    (today, birth));
+	CHECK(years{4} == floor        <years>(diff));
+	CHECK(years{5} == round        <years>(diff));
+	CHECK(years{5} == ceil         <years>(diff));
+	CHECK(years{4} == duration_cast<years>(diff));
+	CHECK(float_years{4.996}.count() == Approx{float_years{diff}.count()}.epsilon(0.001));
+    }
+    today += days{1};
+    {
+	const auto diff = today - birth;
+	CHECK(years{5} == calc_age    (today, birth));
+	CHECK(years{5} == floor        <years>(diff));
+	CHECK(years{5} == round        <years>(diff));
+	CHECK(years{6} == ceil         <years>(diff));
+	CHECK(years{5} == duration_cast<years>(diff));
+	CHECK(float_years{5.002}.count() == Approx{float_years{diff}.count()}.epsilon(0.001));
+    }
 }
 
 TEST_CASE("date-days arithmetic")

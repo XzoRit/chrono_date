@@ -26,13 +26,14 @@ TEST_CASE("calc_age")
     for(; start < end; start += days{1})
     {
 	const auto diff = start - birth;
-	std::cout << "today: " << start << ' ' << "birthday: " << birth << '\n';
+	std::cout << "today         " << start << '\n';
+	std::cout << "birthday      " << birth << '\n';
 	std::cout << "calc_age      " << calc_age    (start, birth).count() << '\n';
 	std::cout << "floor         " << floor        <years>(diff).count() << '\n';
 	std::cout << "round         " << round        <years>(diff).count() << '\n';
 	std::cout << "ceil          " << ceil         <years>(diff).count() << '\n';
 	std::cout << "duration_cast " << duration_cast<years>(diff).count() << '\n';
-	std::cout << "float years   " << float_years         {diff}.count() << '\n';
+	std::cout << "float years   " << float_years         {diff}.count() << "\n\n";
     }
     CHECK(years{5}.count() == calc_age(start, birth).count());
 }

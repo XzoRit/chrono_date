@@ -60,7 +60,9 @@ TEST_CASE("date-days arithmetic")
 
 TEST_CASE("stream time_point")
 {
-    std::cout << system_clock::now() << '\n';
+    std::stringstream str;
+    str << (sys_days{1986_y/sep/30} + 19h + 53min + 2s + 457ms);
+    CHECK(str.str() == "1986-09-30 19:53:02.457");
 }
 
 TEST_CASE("year-month-last")
@@ -199,14 +201,13 @@ TEST_CASE("weekday")
     CHECK(sys_days{1999_y/dec/last} == sys_days{1999_y/dec/fri[last]});
 }
 
-TEST_CASE("today")
+TEST_CASE("time of a day")
 {
-    const auto tp = system_clock::now();
-    const year_month_day ymd = floor<days>(tp);
-    const auto hms = make_time(tp - sys_days{ymd});
-    std::cout << ymd.year() << ymd.month() << ymd.day() << '\n'
-	      << hms.hours().count()
-	      << hms.minutes().count()
-	      << hms.seconds().count()
-	      << hms.subseconds().count() << '\n';
+    const auto today = 1981_y/jan/9;
+    const auto tp = sys_days{today} + 11h + 7min + 17s + 117ms;
+    auto hms = make_time(tp - sys_days{today});
+    CHECK(hms.hours() == 11h);
+    CHECK(hms.minutes() == 7min);
+    CHECK(hms.seconds() == 17s);
+    CHECK(hms.subseconds() == 117ms);
 }

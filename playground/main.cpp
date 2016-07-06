@@ -9,12 +9,13 @@ using namespace date::literals;
 using namespace std::chrono;
 using namespace std::chrono_literals;
 
-static years calc_age(const year_month_day& today, const year_month_day& birth)
+template<class duration_type>
+static duration_type calc_age(const year_month_day& today, const year_month_day& birth)
 {
-    return
-	today.year() -
-	birth.year() -
-	years{today < today.year()/birth.month()/birth.day()};
+    return floor<duration_type>(
+	today.year()/today.month() -
+	birth.year()/birth.month() -
+	months{today.day() < birth.day()});
 }
 
 TEST_CASE("calc_age")
@@ -24,7 +25,7 @@ TEST_CASE("calc_age")
     const auto birth = sys_days{2010_y/aug/21};
     {
 	const auto diff = today - birth;
-	CHECK(years{4} == calc_age    (today, birth));
+	CHECK(years{4} == calc_age     <years>(today, birth));
 	CHECK(years{4} == floor        <years>(diff));
 	CHECK(years{5} == round        <years>(diff));
 	CHECK(years{5} == ceil         <years>(diff));
@@ -34,7 +35,7 @@ TEST_CASE("calc_age")
     today += days{1};
     {
 	const auto diff = today - birth;
-	CHECK(years{5} == calc_age    (today, birth));
+	CHECK(years{5} == calc_age     <years>(today, birth));
 	CHECK(years{4} == floor        <years>(diff));
 	CHECK(years{5} == round        <years>(diff));
 	CHECK(years{5} == ceil         <years>(diff));
@@ -44,7 +45,7 @@ TEST_CASE("calc_age")
     today += days{1};
     {
 	const auto diff = today - birth;
-	CHECK(years{5} == calc_age    (today, birth));
+	CHECK(years{5} == calc_age     <years>(today, birth));
 	CHECK(years{5} == floor        <years>(diff));
 	CHECK(years{5} == round        <years>(diff));
 	CHECK(years{6} == ceil         <years>(diff));

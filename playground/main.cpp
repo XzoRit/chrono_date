@@ -3,6 +3,7 @@
 #include <catch.hpp>
 #include <date.h>
 #include <chrono>
+#include <sstream>
 
 using namespace date;
 using namespace date::literals;
@@ -211,4 +212,41 @@ TEST_CASE("time of a day")
     CHECK(hms.minutes() == 7min);
     CHECK(hms.seconds() == 17s);
     CHECK(hms.subseconds() == 117ms);
+}
+
+TEST_CASE("time of day with tick")
+{
+    using Tick = duration<int, std::ratio<1, 4>>;
+    SECTION("two ticks")
+    {
+	const auto tick = Tick{2};
+	const auto hms = make_time(tick);
+	std::stringstream str;
+	str << hms;
+	CHECK(str.str() == "00:00:00.5");
+    }
+    SECTION("one tick")
+    {
+	const auto tick = Tick{1};
+	const auto hms = make_time(tick);
+	std::stringstream str;
+	str << hms;
+	CHECK(str.str() == "00:00:00.2");
+    }
+    SECTION("one tick with centi format")
+    {
+	const auto tick = Tick{1};
+	const auto hms = make_time(duration<Tick::rep, std::centi>{tick});
+	std::stringstream str;
+	str << hms;
+	CHECK(str.str() == "00:00:00.25");
+    }
+    SECTION("one tick with milli format")
+    {
+	const auto tick = Tick{1};
+	const auto hms = make_time(duration<Tick::rep, std::milli>{tick});
+	std::stringstream str;
+	str << hms;
+	CHECK(str.str() == "00:00:00.250");
+    }
 }

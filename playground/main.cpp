@@ -2,6 +2,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 #include <date.h>
+#include <tz.h>
 #include <chrono>
 #include <sstream>
 
@@ -14,9 +15,9 @@ template<class duration_type>
 static duration_type calc_age(const year_month_day& today, const year_month_day& birth)
 {
     return floor<duration_type>(
-	today.year()/today.month() -
-	birth.year()/birth.month() -
-	months{today.day() < birth.day()});
+               today.year()/today.month() -
+               birth.year()/birth.month() -
+               months{today.day() < birth.day()});
 }
 
 TEST_CASE("calc_age")
@@ -25,33 +26,33 @@ TEST_CASE("calc_age")
     auto today = sys_days{2015_y/aug/20};
     const auto birth = sys_days{2010_y/aug/21};
     {
-	const auto diff = today - birth;
-	CHECK(years{4} == calc_age     <years>(today, birth));
-	CHECK(years{4} == floor        <years>(diff));
-	CHECK(years{5} == round        <years>(diff));
-	CHECK(years{5} == ceil         <years>(diff));
-	CHECK(years{4} == duration_cast<years>(diff));
-	CHECK(float_years{4.996}.count() == Approx{float_years{diff}.count()}.epsilon(0.001));
+        const auto diff = today - birth;
+        CHECK(years{4} == calc_age     <years>(today, birth));
+        CHECK(years{4} == floor        <years>(diff));
+        CHECK(years{5} == round        <years>(diff));
+        CHECK(years{5} == ceil         <years>(diff));
+        CHECK(years{4} == duration_cast<years>(diff));
+        CHECK(float_years{4.996} .count() == Approx{float_years{diff} .count()} .epsilon(0.001));
     }
     today += days{1};
     {
-	const auto diff = today - birth;
-	CHECK(years{5} == calc_age     <years>(today, birth));
-	CHECK(years{4} == floor        <years>(diff));
-	CHECK(years{5} == round        <years>(diff));
-	CHECK(years{5} == ceil         <years>(diff));
-	CHECK(years{4} == duration_cast<years>(diff));
-	CHECK(float_years{4.996}.count() == Approx{float_years{diff}.count()}.epsilon(0.001));
+        const auto diff = today - birth;
+        CHECK(years{5} == calc_age     <years>(today, birth));
+        CHECK(years{4} == floor        <years>(diff));
+        CHECK(years{5} == round        <years>(diff));
+        CHECK(years{5} == ceil         <years>(diff));
+        CHECK(years{4} == duration_cast<years>(diff));
+        CHECK(float_years{4.996} .count() == Approx{float_years{diff} .count()} .epsilon(0.001));
     }
     today += days{1};
     {
-	const auto diff = today - birth;
-	CHECK(years{5} == calc_age     <years>(today, birth));
-	CHECK(years{5} == floor        <years>(diff));
-	CHECK(years{5} == round        <years>(diff));
-	CHECK(years{6} == ceil         <years>(diff));
-	CHECK(years{5} == duration_cast<years>(diff));
-	CHECK(float_years{5.002}.count() == Approx{float_years{diff}.count()}.epsilon(0.001));
+        const auto diff = today - birth;
+        CHECK(years{5} == calc_age     <years>(today, birth));
+        CHECK(years{5} == floor        <years>(diff));
+        CHECK(years{5} == round        <years>(diff));
+        CHECK(years{6} == ceil         <years>(diff));
+        CHECK(years{5} == duration_cast<years>(diff));
+        CHECK(float_years{5.002} .count() == Approx{float_years{diff} .count()} .epsilon(0.001));
     }
 }
 
@@ -70,9 +71,10 @@ TEST_CASE("stream time_point")
 TEST_CASE("year-month-last")
 {
     CHECK((2000_y/feb/29 ==
-	  year_month_day{
-	      year_month_day_last{
-		  2000_y, month_day_last{feb}}}));
+           year_month_day
+    {
+        year_month_day_last{
+            2000_y, month_day_last{feb}}}));
     CHECK(2000_y/feb/29 == 2000_y/feb/last);
 }
 
@@ -80,36 +82,36 @@ TEST_CASE("adding months")
 {
     SECTION("+ months{1}")
     {
-	auto ymd = 2000_y/jan/30 + months{1};
-	CHECK(ymd == 2000_y/feb/30);
-	CHECK_FALSE(ymd.ok());
-	ymd -= months{1};
-	CHECK(ymd == 2000_y/jan/30);
+        auto ymd = 2000_y/jan/30 + months{1};
+        CHECK(ymd == 2000_y/feb/30);
+        CHECK_FALSE(ymd.ok());
+        ymd -= months{1};
+        CHECK(ymd == 2000_y/jan/30);
     }
     SECTION("+ months{1} clamp")
     {
-	const auto ymd = 2000_y/jan/30 + months{1};
-	if(!ymd.ok())
-	{
-	    const auto clamp = ymd.year()/ymd.month()/last;
-	    CHECK(clamp == 2000_y/feb/29);
-	}
+        const auto ymd = 2000_y/jan/30 + months{1};
+        if(!ymd.ok())
+        {
+            const auto clamp = ymd.year()/ymd.month()/last;
+            CHECK(clamp == 2000_y/feb/29);
+        }
     }
     SECTION("+ months{1} carry over")
     {
-	const auto ymd = 2000_y/jan/30 + months{1};
-	if(!ymd.ok())
-	{
-	    const auto carry_over = sys_days{ymd};
-	    CHECK(carry_over == 2000_y/mar/1);
-	}
+        const auto ymd = 2000_y/jan/30 + months{1};
+        if(!ymd.ok())
+        {
+            const auto carry_over = sys_days{ymd};
+            CHECK(carry_over == 2000_y/mar/1);
+        }
     }
     SECTION("+ months{2}")
     {
-	auto ymd = 2000_y/jan/30 + months{2};
-	CHECK(ymd == 2000_y/mar/30);
-	ymd -= months{2};
-	CHECK(ymd == 2000_y/jan/30);
+        auto ymd = 2000_y/jan/30 + months{2};
+        CHECK(ymd == 2000_y/mar/30);
+        ymd -= months{2};
+        CHECK(ymd == 2000_y/jan/30);
     }
 }
 
@@ -117,80 +119,80 @@ TEST_CASE("floor, ceil, round, cast")
 {
     SECTION("durations")
     {
-	CHECK(1s == ceil 	 <seconds>(750ms));
-	CHECK(0s == floor	 <seconds>(750ms));
-	CHECK(1s == round	 <seconds>(750ms));
-	CHECK(0s == duration_cast<seconds>(750ms));
+        CHECK(1s == ceil 	 <seconds>(750ms));
+        CHECK(0s == floor	 <seconds>(750ms));
+        CHECK(1s == round	 <seconds>(750ms));
+        CHECK(0s == duration_cast<seconds>(750ms));
 
-	CHECK(1s == ceil 	 <seconds>(250ms));
-	CHECK(0s == floor	 <seconds>(250ms));
-	CHECK(0s == round	 <seconds>(250ms));
-	CHECK(0s == duration_cast<seconds>(250ms));
+        CHECK(1s == ceil 	 <seconds>(250ms));
+        CHECK(0s == floor	 <seconds>(250ms));
+        CHECK(0s == round	 <seconds>(250ms));
+        CHECK(0s == duration_cast<seconds>(250ms));
 
-	CHECK( 0s == ceil 	  <seconds>(-750ms));
-	CHECK(-1s == floor	  <seconds>(-750ms));
-	CHECK(-1s == round	  <seconds>(-750ms));
-	CHECK( 0s == duration_cast<seconds>(-750ms));
+        CHECK( 0s == ceil 	  <seconds>(-750ms));
+        CHECK(-1s == floor	  <seconds>(-750ms));
+        CHECK(-1s == round	  <seconds>(-750ms));
+        CHECK( 0s == duration_cast<seconds>(-750ms));
 
-	CHECK( 0s == ceil 	  <seconds>(-250ms));
-	CHECK(-1s == floor	  <seconds>(-250ms));
-	CHECK( 0s == round	  <seconds>(-250ms));
-	CHECK( 0s == duration_cast<seconds>(-250ms));
+        CHECK( 0s == ceil 	  <seconds>(-250ms));
+        CHECK(-1s == floor	  <seconds>(-250ms));
+        CHECK( 0s == round	  <seconds>(-250ms));
+        CHECK( 0s == duration_cast<seconds>(-250ms));
     }
     SECTION("system_clock::time_point")
     {
-	using system_time = system_clock::time_point;
+        using system_time = system_clock::time_point;
 
-	CHECK(1970_y/jan/2 == year_month_day{ceil 	    <days>(system_time{15h})});
-	CHECK(1970_y/jan/1 == year_month_day{floor	    <days>(system_time{15h})});
-	CHECK(1970_y/jan/2 == year_month_day{round	    <days>(system_time{15h})});
-	CHECK(1970_y/jan/1 == year_month_day{time_point_cast<days>(system_time{15h})});
+        CHECK(1970_y/jan/2 == year_month_day{ceil 	    <days>(system_time{15h})});
+        CHECK(1970_y/jan/1 == year_month_day{floor	    <days>(system_time{15h})});
+        CHECK(1970_y/jan/2 == year_month_day{round	    <days>(system_time{15h})});
+        CHECK(1970_y/jan/1 == year_month_day{time_point_cast<days>(system_time{15h})});
 
-	CHECK(1970_y/jan/2 == year_month_day{ceil 	    <days>(system_time{9h})});
-	CHECK(1970_y/jan/1 == year_month_day{floor	    <days>(system_time{9h})});
-	CHECK(1970_y/jan/1 == year_month_day{round	    <days>(system_time{9h})});
-	CHECK(1970_y/jan/1 == year_month_day{time_point_cast<days>(system_time{9h})});
+        CHECK(1970_y/jan/2 == year_month_day{ceil 	    <days>(system_time{9h})});
+        CHECK(1970_y/jan/1 == year_month_day{floor	    <days>(system_time{9h})});
+        CHECK(1970_y/jan/1 == year_month_day{round	    <days>(system_time{9h})});
+        CHECK(1970_y/jan/1 == year_month_day{time_point_cast<days>(system_time{9h})});
 
-	CHECK(1970_y/jan/ 1 == year_month_day{ceil 	     <days>(system_time{-15h})});
-	CHECK(1969_y/dec/31 == year_month_day{floor	     <days>(system_time{-15h})});
-	CHECK(1969_y/dec/31 == year_month_day{round	     <days>(system_time{-15h})});
-	CHECK(1970_y/jan/ 1 == year_month_day{time_point_cast<days>(system_time{-15h})});
+        CHECK(1970_y/jan/ 1 == year_month_day{ceil 	     <days>(system_time{-15h})});
+        CHECK(1969_y/dec/31 == year_month_day{floor	     <days>(system_time{-15h})});
+        CHECK(1969_y/dec/31 == year_month_day{round	     <days>(system_time{-15h})});
+        CHECK(1970_y/jan/ 1 == year_month_day{time_point_cast<days>(system_time{-15h})});
 
-	CHECK(1970_y/jan/ 1 == year_month_day{ceil 	     <days>(system_time{-9h})});
-	CHECK(1969_y/dec/31 == year_month_day{floor	     <days>(system_time{-9h})});
-	CHECK(1970_y/jan/ 1 == year_month_day{round	     <days>(system_time{-9h})});
-	CHECK(1970_y/jan/ 1 == year_month_day{time_point_cast<days>(system_time{-9h})});
+        CHECK(1970_y/jan/ 1 == year_month_day{ceil 	     <days>(system_time{-9h})});
+        CHECK(1969_y/dec/31 == year_month_day{floor	     <days>(system_time{-9h})});
+        CHECK(1970_y/jan/ 1 == year_month_day{round	     <days>(system_time{-9h})});
+        CHECK(1970_y/jan/ 1 == year_month_day{time_point_cast<days>(system_time{-9h})});
     }
 }
 
 TEST_CASE("date-time")
 {
     {
-	auto tp = sys_days{1970_y/jan/3};
-	CHECK(tp.time_since_epoch() == days{2});
+        auto tp = sys_days{1970_y/jan/3};
+        CHECK(tp.time_since_epoch() == days{2});
     }
     {
-	auto tp = sys_days{1970_y/jan/3} + 7h;
-	CHECK(tp.time_since_epoch() == 55h);
+        auto tp = sys_days{1970_y/jan/3} + 7h;
+        CHECK(tp.time_since_epoch() == 55h);
     }
     {
-	auto tp = sys_days{1970_y/jan/3} + 7h + 33min;
-	CHECK(tp.time_since_epoch() == 3333min);
+        auto tp = sys_days{1970_y/jan/3} + 7h + 33min;
+        CHECK(tp.time_since_epoch() == 3333min);
     }
     {
-	auto tp = sys_days{1970_y/jan/3} + 7h + 33min + 20s;
-	CHECK(tp.time_since_epoch() == 200000s);
+        auto tp = sys_days{1970_y/jan/3} + 7h + 33min + 20s;
+        CHECK(tp.time_since_epoch() == 200000s);
     }
     {
-	const auto tp = sys_days{1970_y/jan/3} + 7h + 33min + 20s;
-	const auto date = floor<days>(tp);
-	CHECK(date == 1970_y/jan/3);
-	const auto since_midnight = tp - date;
-	CHECK(since_midnight == 27200s);
-	const auto time = make_time(since_midnight);
-	CHECK(time.hours()   ==  7h);
-	CHECK(time.minutes() == 33min);
-	CHECK(time.seconds() == 20s);
+        const auto tp = sys_days{1970_y/jan/3} + 7h + 33min + 20s;
+        const auto date = floor<days>(tp);
+        CHECK(date == 1970_y/jan/3);
+        const auto since_midnight = tp - date;
+        CHECK(since_midnight == 27200s);
+        const auto time = make_time(since_midnight);
+        CHECK(time.hours()   ==  7h);
+        CHECK(time.minutes() == 33min);
+        CHECK(time.seconds() == 20s);
     }
 }
 
@@ -219,34 +221,52 @@ TEST_CASE("time of day with tick")
     using Tick = duration<int, std::ratio<1, 4>>;
     SECTION("two ticks")
     {
-	const auto tick = Tick{2};
-	const auto hms = make_time(tick);
-	std::stringstream str;
-	str << hms;
-	CHECK(str.str() == "00:00:00.5");
+        const auto tick = Tick{2};
+        const auto hms = make_time(tick);
+        std::stringstream str;
+        str << hms;
+        CHECK(str.str() == "00:00:00.5");
     }
     SECTION("one tick")
     {
-	const auto tick = Tick{1};
-	const auto hms = make_time(tick);
-	std::stringstream str;
-	str << hms;
-	CHECK(str.str() == "00:00:00.2");
+        const auto tick = Tick{1};
+        const auto hms = make_time(tick);
+        std::stringstream str;
+        str << hms;
+        CHECK(str.str() == "00:00:00.2");
     }
     SECTION("one tick with centi format")
     {
-	const auto tick = Tick{1};
-	const auto hms = make_time(duration<Tick::rep, std::centi>{tick});
-	std::stringstream str;
-	str << hms;
-	CHECK(str.str() == "00:00:00.25");
+        const auto tick = Tick{1};
+        const auto hms = make_time(duration<Tick::rep, std::centi> {tick});
+        std::stringstream str;
+        str << hms;
+        CHECK(str.str() == "00:00:00.25");
     }
     SECTION("one tick with milli format")
     {
-	const auto tick = Tick{1};
-	const auto hms = make_time(duration<Tick::rep, std::milli>{tick});
-	std::stringstream str;
-	str << hms;
-	CHECK(str.str() == "00:00:00.250");
+        const auto tick = Tick{1};
+        const auto hms = make_time(duration<Tick::rep, std::milli> {tick});
+        std::stringstream str;
+        str << hms;
+        CHECK(str.str() == "00:00:00.250");
     }
+}
+
+TEST_CASE("get offset from zoned_time")
+{
+    const auto zt = make_zoned(current_zone(), system_clock::now());
+    WARN(zt.get_local_time());
+    WARN(year_month_day{floor<days>(zt.get_sys_time())});
+    WARN(zt.get_info());
+    WARN(zt.get_info().offset.count());
+}
+
+TEST_CASE("nonexistent local time")
+{
+    const auto zt = make_zoned(current_zone(), sys_days{2016_y/mar/26} + 23h + 30min);
+    WARN(zt.get_local_time());
+    WARN(year_month_day{floor<days>(zt.get_sys_time())});
+    WARN(zt.get_info());
+    WARN(zt.get_info().offset.count());
 }

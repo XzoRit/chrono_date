@@ -253,20 +253,49 @@ TEST_CASE("time of day with tick")
     }
 }
 
-TEST_CASE("get offset from zoned_time")
+TEST_CASE("get time zone string from zoned_time")
 {
-    const auto zt = make_zoned(current_zone(), system_clock::now());
-    WARN(zt.get_local_time());
-    WARN(year_month_day{floor<days>(zt.get_sys_time())});
-    WARN(zt.get_info());
-    WARN(zt.get_info().offset.count());
+    const auto zt =
+	make_zoned(
+	    current_zone(),
+	    local_days{2010_y/jan/28} + 11h + 39min + 38s);
+
+    CHECK(zt.get_info().abbrev == "CET");
 }
 
 TEST_CASE("nonexistent local time")
 {
-    const auto zt = make_zoned(current_zone(), sys_days{2016_y/mar/26} + 23h + 30min);
-    WARN(zt.get_local_time());
-    WARN(year_month_day{floor<days>(zt.get_sys_time())});
-    WARN(zt.get_info());
-    WARN(zt.get_info().offset.count());
+    const auto time_zone_string = "America/New_York";
+    const auto nonexistent_local_time_point = local_days{sun[2]/mar/2016} + 2h + 30min;
+
+    SECTION("trying to create nonexistent local time throws")
+    {
+        CHECK_THROWS_AS(
+            static_cast<void>(
+                make_zoned(
+                    time_zone_string,
+                    nonexistent_local_time_point)),
+            nonexistent_local_time);
+    }
+    SECTION("specify earliest or latest for nonexistent local time")
+    {
+        const auto choose_from_nonexistent_time =
+            [=](auto choice)
+        {
+            return make_zoned(
+                       time_zone_string,
+                       nonexistent_local_time_point,
+                       choice);
+        };
+        const auto existent_local_time_point = local_days{sun[2]/mar/2016} + 3h;
+
+	CHECK(
+	    existent_local_time_point ==
+	    choose_from_nonexistent_time(choose::earliest)
+	    .get_local_time());
+        CHECK(
+	    existent_local_time_point ==
+	    choose_from_nonexistent_time(choose::latest)
+	    .get_local_time());
+    }
 }

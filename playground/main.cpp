@@ -256,9 +256,9 @@ TEST_CASE("time of day with tick")
 TEST_CASE("get time zone string from zoned_time")
 {
     const auto zt =
-	make_zoned(
-	    current_zone(),
-	    local_days{2010_y/jan/28} + 11h + 39min + 38s);
+        make_zoned(
+            current_zone(),
+            local_days{2010_y/jan/28} + 11h + 39min + 38s);
 
     CHECK(zt.get_info().abbrev == "CET");
 }
@@ -271,10 +271,9 @@ TEST_CASE("nonexistent local time")
     SECTION("trying to create nonexistent local time throws")
     {
         CHECK_THROWS_AS(
-            static_cast<void>(
-                make_zoned(
-                    time_zone_string,
-                    nonexistent_local_time_point)),
+            make_zoned(
+                time_zone_string,
+                nonexistent_local_time_point),
             nonexistent_local_time);
     }
     SECTION("specify earliest or latest for nonexistent local time")

@@ -263,38 +263,85 @@ TEST_CASE("get time zone string from zoned_time")
     CHECK(zt.get_info().abbrev == "CET");
 }
 
-TEST_CASE("nonexistent local time")
+TEST_CASE("nonexistent/ambigous local time")
 {
     const auto time_zone_string = "America/New_York";
-    const auto nonexistent_local_time_point = local_days{sun[2]/mar/2016} + 2h + 30min;
 
-    SECTION("trying to create nonexistent local time throws")
+    SECTION("nonexistent local time")
     {
-        CHECK_THROWS_AS(
-            make_zoned(
-                time_zone_string,
-                nonexistent_local_time_point),
-            nonexistent_local_time);
-    }
-    SECTION("specify earliest or latest for nonexistent local time")
-    {
-        const auto choose_from_nonexistent_time =
-            [=](auto choice)
+        const auto nonexistent_local_time_point = local_days{sun[2]/mar/2016} + 2h + 30min;
+
+        SECTION("trying to create nonexistent local time throws")
         {
-            return make_zoned(
-                       time_zone_string,
-                       nonexistent_local_time_point,
-                       choice);
-        };
-        const auto existent_local_time_point = local_days{sun[2]/mar/2016} + 3h;
+            CHECK_THROWS_AS(
+                make_zoned(
+                    time_zone_string,
+                    nonexistent_local_time_point),
+                nonexistent_local_time);
+        }
+        SECTION("specify earliest or latest for nonexistent local time")
+        {
+            const auto choose_from_nonexistent_time =
+                [=](auto choice)
+            {
+                return make_zoned(
+                           time_zone_string,
+                           nonexistent_local_time_point,
+                           choice);
+            };
+            const auto existent_local_time_point = local_days{sun[2]/mar/2016} + 3h;
 
-	CHECK(
-	    existent_local_time_point ==
-	    choose_from_nonexistent_time(choose::earliest)
-	    .get_local_time());
-        CHECK(
-	    existent_local_time_point ==
-	    choose_from_nonexistent_time(choose::latest)
-	    .get_local_time());
+            CHECK(
+                existent_local_time_point ==
+                choose_from_nonexistent_time(choose::earliest)
+                .get_local_time());
+            CHECK(
+                existent_local_time_point ==
+                choose_from_nonexistent_time(choose::latest)
+                .get_local_time());
+        }
     }
+    SECTION("ambigous local time")
+    {
+        const auto ambigous_local_time_point = local_days{sun[1]/nov/2016} + 1h + 30min;
+
+        SECTION("trying to create ambigous local time throws")
+        {
+            CHECK_THROWS_AS(
+                make_zoned(
+                    time_zone_string,
+                    ambigous_local_time_point),
+                ambiguous_local_time);
+        }
+        SECTION("specify earliest or latest for ambigous local time")
+        {
+            const auto choose_from_ambigous_time =
+                [=](auto choice)
+            {
+                return make_zoned(
+                           time_zone_string,
+                           ambigous_local_time_point,
+                           choice);
+            };
+
+            CHECK(
+                ambigous_local_time_point ==
+                choose_from_ambigous_time(choose::earliest)
+                .get_local_time());
+            CHECK(
+                ambigous_local_time_point ==
+                choose_from_ambigous_time(choose::latest)
+                .get_local_time());
+        }
+    }
+}
+
+
+TEST_CASE("zoned time from system time")
+{
+    const auto now = system_clock::now();
+    const auto now_in_secs = floor<seconds>(now);
+    const auto zt = zoned_seconds{now_in_secs};
+    CHECK(zt.get_sys_time() == now_in_secs);
+    CHECK(zt.get_local_time() == local_seconds{now_in_secs.time_since_epoch()});
 }

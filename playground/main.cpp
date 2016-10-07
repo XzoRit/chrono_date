@@ -345,3 +345,22 @@ TEST_CASE("zoned time from system time")
     CHECK(zt.get_sys_time() == now_in_secs);
     CHECK(zt.get_local_time() == local_seconds{now_in_secs.time_since_epoch()});
 }
+
+TEST_CASE("local time arithmetic over daylight savings time")
+{
+    const auto before_ds_time =
+        make_zoned(
+            "America/New_York",
+            local_days{2016_y/mar/12} + 9h);
+
+    CHECK(before_ds_time.get_sys_time()   == sys_days  {2016_y/mar/12} + 14h);
+    CHECK(before_ds_time.get_local_time() == local_days{2016_y/mar/12} +  9h);
+
+    const auto after_ds_time =
+        make_zoned(
+            "America/New_York",
+            before_ds_time.get_local_time() + days{1});
+
+    CHECK(after_ds_time.get_sys_time()   == sys_days  {2016_y/mar/13} + 13h);
+    CHECK(after_ds_time.get_local_time() == local_days{2016_y/mar/13} +  9h);
+}

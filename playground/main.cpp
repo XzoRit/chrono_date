@@ -364,3 +364,27 @@ TEST_CASE("local time arithmetic over daylight savings time")
     CHECK(after_ds_time.get_sys_time()   == sys_days  {2016_y/mar/13} + 13h);
     CHECK(after_ds_time.get_local_time() == local_days{2016_y/mar/13} +  9h);
 }
+
+TEST_CASE("daylight savings time germany")
+{
+    SECTION("summer time")
+    {
+        const auto never_existed =
+            static_cast<local_days>(2016_y/mar/sun[last]) + 2h + 30min;
+        CHECK_THROWS_AS(
+            make_zoned(
+                "Europe/Berlin",
+                never_existed),
+            nonexistent_local_time);
+    }
+    SECTION("winter time")
+    {
+        const auto existed_twice =
+            static_cast<local_days>(2016_y/oct/sun[last]) + 2h + 30min;
+        CHECK_THROWS_AS(
+            make_zoned(
+                "Europe/Berlin",
+                existed_twice),
+            ambiguous_local_time);
+    }
+}

@@ -276,19 +276,19 @@ TEST_CASE("local time arithmetic over daylight savings time")
 {
     const auto before_ds_time =
         make_zoned(
-            "America/New_York",
-            local_days{2016_y/mar/12} + 9h);
+            "Europe/Berlin",
+            local_days{2016_y/mar/sat[last]} + 9h);
 
-    CHECK(before_ds_time.get_sys_time()   == sys_days  {2016_y/mar/12} + 14h);
-    CHECK(before_ds_time.get_local_time() == local_days{2016_y/mar/12} +  9h);
+    CHECK(before_ds_time.get_sys_time()   == sys_days  {2016_y/mar/sat[last]} + 8h);
+    CHECK(before_ds_time.get_local_time() == local_days{2016_y/mar/sat[last]} + 9h);
 
     const auto after_ds_time =
         make_zoned(
-            "America/New_York",
+            "Europe/Berlin",
             before_ds_time.get_local_time() + days{1});
 
-    CHECK(after_ds_time.get_sys_time()   == sys_days  {2016_y/mar/13} + 13h);
-    CHECK(after_ds_time.get_local_time() == local_days{2016_y/mar/13} +  9h);
+    CHECK(after_ds_time.get_sys_time()   == sys_days  {2016_y/mar/sun[last]} + 7h);
+    CHECK(after_ds_time.get_local_time() == local_days{2016_y/mar/sun[last]} + 9h);
 }
 
 TEST_CASE("nonexistent and ambiguous local time")

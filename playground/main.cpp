@@ -263,80 +263,6 @@ TEST_CASE("get time zone string from zoned_time")
     CHECK(zt.get_info().abbrev == "CET");
 }
 
-TEST_CASE("nonexistent/ambigous local time")
-{
-    const auto time_zone_string = "America/New_York";
-
-    SECTION("nonexistent local time")
-    {
-        const auto nonexistent_local_time_point = local_days{sun[2]/mar/2016} + 2h + 30min;
-
-        SECTION("trying to create nonexistent local time throws")
-        {
-            CHECK_THROWS_AS(
-                make_zoned(
-                    time_zone_string,
-                    nonexistent_local_time_point),
-                nonexistent_local_time);
-        }
-        SECTION("specify earliest or latest for nonexistent local time")
-        {
-            const auto choose_from_nonexistent_time =
-                [=](auto choice)
-            {
-                return make_zoned(
-                           time_zone_string,
-                           nonexistent_local_time_point,
-                           choice);
-            };
-            const auto existent_local_time_point = local_days{sun[2]/mar/2016} + 3h;
-
-            CHECK(
-                existent_local_time_point ==
-                choose_from_nonexistent_time(choose::earliest)
-                .get_local_time());
-            CHECK(
-                existent_local_time_point ==
-                choose_from_nonexistent_time(choose::latest)
-                .get_local_time());
-        }
-    }
-    SECTION("ambigous local time")
-    {
-        const auto ambigous_local_time_point = local_days{sun[1]/nov/2016} + 1h + 30min;
-
-        SECTION("trying to create ambigous local time throws")
-        {
-            CHECK_THROWS_AS(
-                make_zoned(
-                    time_zone_string,
-                    ambigous_local_time_point),
-                ambiguous_local_time);
-        }
-        SECTION("specify earliest or latest for ambigous local time")
-        {
-            const auto choose_from_ambigous_time =
-                [=](auto choice)
-            {
-                return make_zoned(
-                           time_zone_string,
-                           ambigous_local_time_point,
-                           choice);
-            };
-
-            CHECK(
-                ambigous_local_time_point ==
-                choose_from_ambigous_time(choose::earliest)
-                .get_local_time());
-            CHECK(
-                ambigous_local_time_point ==
-                choose_from_ambigous_time(choose::latest)
-                .get_local_time());
-        }
-    }
-}
-
-
 TEST_CASE("zoned time from system time")
 {
     const auto now = system_clock::now();
@@ -365,7 +291,7 @@ TEST_CASE("local time arithmetic over daylight savings time")
     CHECK(after_ds_time.get_local_time() == local_days{2016_y/mar/13} +  9h);
 }
 
-TEST_CASE("daylight savings time germany")
+TEST_CASE("nonexistent and ambiguous local time")
 {
     SECTION("summer time")
     {
@@ -376,6 +302,20 @@ TEST_CASE("daylight savings time germany")
                 "Europe/Berlin",
                 never_existed),
             nonexistent_local_time);
+	CHECK(
+            make_zoned(
+                "Europe/Berlin",
+                never_existed,
+		choose::earliest).get_local_time()
+	    ==
+            static_cast<local_days>(2016_y/mar/sun[last]) + 3h);
+	CHECK(
+            make_zoned(
+                "Europe/Berlin",
+                never_existed,
+		choose::latest).get_local_time()
+	    ==
+            static_cast<local_days>(2016_y/mar/sun[last]) + 3h);
     }
     SECTION("winter time")
     {
@@ -386,5 +326,19 @@ TEST_CASE("daylight savings time germany")
                 "Europe/Berlin",
                 existed_twice),
             ambiguous_local_time);
+	CHECK(
+            make_zoned(
+                "Europe/Berlin",
+                existed_twice,
+		choose::earliest).get_local_time()
+	    ==
+            static_cast<local_days>(2016_y/oct/sun[last]) + 2h + 30min);
+	CHECK(
+            make_zoned(
+                "Europe/Berlin",
+                existed_twice,
+		choose::latest).get_local_time()
+	    ==
+            static_cast<local_days>(2016_y/oct/sun[last]) + 2h + 30min);
     }
 }

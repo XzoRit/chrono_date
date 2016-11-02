@@ -11,6 +11,75 @@ using namespace date::literals;
 using namespace std::chrono;
 using namespace std::chrono_literals;
 
+using std::ratio;
+
+TEST_CASE("construction of durations")
+{
+  const auto a = seconds{5};
+  const auto b = milliseconds{1500};
+
+  CHECK(a + b == milliseconds{6500});
+}
+
+TEST_CASE("chrono literals")
+{
+  const auto a = 1h + 30min + 20s;
+
+  CHECK(a == 5420s);
+}
+
+TEST_CASE("no implicit loss of precision")
+{
+  auto a = 5s;
+  const auto b = 1500ms;
+  // a = b;
+  a = duration_cast<seconds>(b);
+  CHECK(a == 1s);
+}
+
+TEST_CASE("round durations")
+{
+  CHECK( 1s == ceil 	    <seconds>( 750ms));
+  CHECK( 0s == floor	    <seconds>( 750ms));
+  CHECK( 1s == round	    <seconds>( 750ms));
+  CHECK( 0s == duration_cast<seconds>( 750ms));
+
+  CHECK( 1s == ceil 	    <seconds>( 250ms));
+  CHECK( 0s == floor	    <seconds>( 250ms));
+  CHECK( 0s == round	    <seconds>( 250ms));
+  CHECK( 0s == duration_cast<seconds>( 250ms));
+
+  CHECK( 0s == ceil 	    <seconds>(-750ms));
+  CHECK(-1s == floor	    <seconds>(-750ms));
+  CHECK(-1s == round	    <seconds>(-750ms));
+  CHECK( 0s == duration_cast<seconds>(-750ms));
+
+  CHECK( 0s == ceil 	    <seconds>(-250ms));
+  CHECK(-1s == floor	    <seconds>(-250ms));
+  CHECK( 0s == round	    <seconds>(-250ms));
+  CHECK( 0s == duration_cast<seconds>(-250ms));
+}
+
+TEST_CASE("defining own durations")
+{
+  using Tick = duration<int, ratio<1, 4>>;
+
+  auto a = Tick{3};
+  CHECK(  a == 750ms);
+  CHECK(--a == 500ms);
+
+  const auto set_timeout = [](Tick timeout)
+    {
+      while(--timeout != 0s){}
+      CHECK(timeout == 0s);
+    };
+
+  set_timeout(2s);
+  set_timeout(ceil <Tick>(300ms));
+  set_timeout(floor<Tick>(300ms));
+  set_timeout(round<Tick>(300ms));
+}
+
 template<class duration_type>
 static duration_type calc_age(const year_month_day& today, const year_month_day& birth)
 {
@@ -117,28 +186,6 @@ TEST_CASE("adding months")
 
 TEST_CASE("floor, ceil, round, cast")
 {
-    SECTION("durations")
-    {
-        CHECK(1s == ceil 	 <seconds>(750ms));
-        CHECK(0s == floor	 <seconds>(750ms));
-        CHECK(1s == round	 <seconds>(750ms));
-        CHECK(0s == duration_cast<seconds>(750ms));
-
-        CHECK(1s == ceil 	 <seconds>(250ms));
-        CHECK(0s == floor	 <seconds>(250ms));
-        CHECK(0s == round	 <seconds>(250ms));
-        CHECK(0s == duration_cast<seconds>(250ms));
-
-        CHECK( 0s == ceil 	  <seconds>(-750ms));
-        CHECK(-1s == floor	  <seconds>(-750ms));
-        CHECK(-1s == round	  <seconds>(-750ms));
-        CHECK( 0s == duration_cast<seconds>(-750ms));
-
-        CHECK( 0s == ceil 	  <seconds>(-250ms));
-        CHECK(-1s == floor	  <seconds>(-250ms));
-        CHECK( 0s == round	  <seconds>(-250ms));
-        CHECK( 0s == duration_cast<seconds>(-250ms));
-    }
     SECTION("system_clock::time_point")
     {
         using system_time = system_clock::time_point;

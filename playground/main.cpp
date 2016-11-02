@@ -15,69 +15,69 @@ using std::ratio;
 
 TEST_CASE("construction of durations")
 {
-  const auto a = seconds{5};
-  const auto b = milliseconds{1500};
+    const auto a = seconds{5};
+    const auto b = milliseconds{1500};
 
-  CHECK(a + b == milliseconds{6500});
+    CHECK(a + b == milliseconds{6500});
 }
 
 TEST_CASE("chrono literals")
 {
-  const auto a = 1h + 30min + 20s;
+    const auto a = 1h + 30min + 20s;
 
-  CHECK(a == 5420s);
+    CHECK(a == 5420s);
 }
 
 TEST_CASE("no implicit loss of precision")
 {
-  auto a = 5s;
-  const auto b = 1500ms;
-  // a = b;
-  a = duration_cast<seconds>(b);
-  CHECK(a == 1s);
+    auto a = 5s;
+    const auto b = 1500ms;
+    // a = b;
+    a = duration_cast<seconds>(b);
+    CHECK(a == 1s);
 }
 
 TEST_CASE("round durations")
 {
-  CHECK( 1s == ceil 	    <seconds>( 750ms));
-  CHECK( 0s == floor	    <seconds>( 750ms));
-  CHECK( 1s == round	    <seconds>( 750ms));
-  CHECK( 0s == duration_cast<seconds>( 750ms));
+    CHECK( 1s == ceil 	    <seconds>( 750ms));
+    CHECK( 0s == floor	    <seconds>( 750ms));
+    CHECK( 1s == round	    <seconds>( 750ms));
+    CHECK( 0s == duration_cast<seconds>( 750ms));
 
-  CHECK( 1s == ceil 	    <seconds>( 250ms));
-  CHECK( 0s == floor	    <seconds>( 250ms));
-  CHECK( 0s == round	    <seconds>( 250ms));
-  CHECK( 0s == duration_cast<seconds>( 250ms));
+    CHECK( 1s == ceil 	    <seconds>( 250ms));
+    CHECK( 0s == floor	    <seconds>( 250ms));
+    CHECK( 0s == round	    <seconds>( 250ms));
+    CHECK( 0s == duration_cast<seconds>( 250ms));
 
-  CHECK( 0s == ceil 	    <seconds>(-750ms));
-  CHECK(-1s == floor	    <seconds>(-750ms));
-  CHECK(-1s == round	    <seconds>(-750ms));
-  CHECK( 0s == duration_cast<seconds>(-750ms));
+    CHECK( 0s == ceil 	    <seconds>(-750ms));
+    CHECK(-1s == floor	    <seconds>(-750ms));
+    CHECK(-1s == round	    <seconds>(-750ms));
+    CHECK( 0s == duration_cast<seconds>(-750ms));
 
-  CHECK( 0s == ceil 	    <seconds>(-250ms));
-  CHECK(-1s == floor	    <seconds>(-250ms));
-  CHECK( 0s == round	    <seconds>(-250ms));
-  CHECK( 0s == duration_cast<seconds>(-250ms));
+    CHECK( 0s == ceil 	    <seconds>(-250ms));
+    CHECK(-1s == floor	    <seconds>(-250ms));
+    CHECK( 0s == round	    <seconds>(-250ms));
+    CHECK( 0s == duration_cast<seconds>(-250ms));
 }
 
 TEST_CASE("defining own durations")
 {
-  using Tick = duration<int, ratio<1, 4>>;
+    using Tick = duration<int, ratio<1, 4>>;
 
-  auto a = Tick{3};
-  CHECK(  a == 750ms);
-  CHECK(--a == 500ms);
+    auto a = Tick{3};
+    CHECK(  a == 750ms);
+    CHECK(--a == 500ms);
 
-  const auto set_timeout = [](Tick timeout)
+    const auto set_timeout = [](Tick timeout)
     {
-      while(--timeout != 0s){}
-      CHECK(timeout == 0s);
+        while(--timeout != 0s) {}
+        CHECK(timeout == 0s);
     };
 
-  set_timeout(2s);
-  set_timeout(ceil <Tick>(300ms));
-  set_timeout(floor<Tick>(300ms));
-  set_timeout(round<Tick>(300ms));
+    set_timeout(2s);
+    set_timeout(ceil <Tick>(300ms));
+    set_timeout(floor<Tick>(300ms));
+    set_timeout(round<Tick>(300ms));
 }
 
 template<class duration_type>
@@ -349,19 +349,19 @@ TEST_CASE("nonexistent and ambiguous local time")
                 "Europe/Berlin",
                 never_existed),
             nonexistent_local_time);
-	CHECK(
+        CHECK(
             make_zoned(
                 "Europe/Berlin",
                 never_existed,
-		choose::earliest).get_local_time()
-	    ==
+                choose::earliest).get_local_time()
+            ==
             static_cast<local_days>(2016_y/mar/sun[last]) + 3h);
-	CHECK(
+        CHECK(
             make_zoned(
                 "Europe/Berlin",
                 never_existed,
-		choose::latest).get_local_time()
-	    ==
+                choose::latest).get_local_time()
+            ==
             static_cast<local_days>(2016_y/mar/sun[last]) + 3h);
     }
     SECTION("winter time")
@@ -373,19 +373,19 @@ TEST_CASE("nonexistent and ambiguous local time")
                 "Europe/Berlin",
                 existed_twice),
             ambiguous_local_time);
-	CHECK(
+        CHECK(
             make_zoned(
                 "Europe/Berlin",
                 existed_twice,
-		choose::earliest).get_local_time()
-	    ==
+                choose::earliest).get_local_time()
+            ==
             static_cast<local_days>(2016_y/oct/sun[last]) + 2h + 30min);
-	CHECK(
+        CHECK(
             make_zoned(
                 "Europe/Berlin",
                 existed_twice,
-		choose::latest).get_local_time()
-	    ==
+                choose::latest).get_local_time()
+            ==
             static_cast<local_days>(2016_y/oct/sun[last]) + 2h + 30min);
     }
 }

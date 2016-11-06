@@ -99,63 +99,6 @@ TEST_CASE("time_point arithmetic")
   CHECK((b - a) == 1h);
 }
 
-template<class duration_type>
-static duration_type calc_age(const year_month_day& today, const year_month_day& birth)
-{
-    return floor<duration_type>(
-               today.year()/today.month() -
-               birth.year()/birth.month() -
-               months{today.day() < birth.day()});
-}
-
-TEST_CASE("calc_age")
-{
-    using float_years = duration<double, years::period>;
-    auto today = sys_days{2015_y/aug/20};
-    const auto birth = sys_days{2010_y/aug/21};
-    {
-        const auto diff = today - birth;
-        CHECK(years{4} == calc_age     <years>(today, birth));
-        CHECK(years{4} == floor        <years>(diff));
-        CHECK(years{5} == round        <years>(diff));
-        CHECK(years{5} == ceil         <years>(diff));
-        CHECK(years{4} == duration_cast<years>(diff));
-        CHECK(float_years{4.996} .count() == Approx{float_years{diff} .count()} .epsilon(0.001));
-    }
-    today += days{1};
-    {
-        const auto diff = today - birth;
-        CHECK(years{5} == calc_age     <years>(today, birth));
-        CHECK(years{4} == floor        <years>(diff));
-        CHECK(years{5} == round        <years>(diff));
-        CHECK(years{5} == ceil         <years>(diff));
-        CHECK(years{4} == duration_cast<years>(diff));
-        CHECK(float_years{4.996} .count() == Approx{float_years{diff} .count()} .epsilon(0.001));
-    }
-    today += days{1};
-    {
-        const auto diff = today - birth;
-        CHECK(years{5} == calc_age     <years>(today, birth));
-        CHECK(years{5} == floor        <years>(diff));
-        CHECK(years{5} == round        <years>(diff));
-        CHECK(years{6} == ceil         <years>(diff));
-        CHECK(years{5} == duration_cast<years>(diff));
-        CHECK(float_years{5.002} .count() == Approx{float_years{diff} .count()} .epsilon(0.001));
-    }
-}
-
-TEST_CASE("date-days arithmetic")
-{
-    CHECK(sys_days{2010_y/feb/28} + days(2) == 2010_y/mar/2);
-}
-
-TEST_CASE("stream time_point")
-{
-    std::stringstream str;
-    str << (sys_days{1986_y/sep/30} + 19h + 53min + 2s + 457ms);
-    CHECK(str.str() == "1986-09-30 19:53:02.457");
-}
-
 TEST_CASE("year-month-last")
 {
     CHECK((2000_y/feb/29 ==
@@ -228,6 +171,63 @@ TEST_CASE("floor, ceil, round, cast")
         CHECK(1969_y/dec/31 == year_month_day{floor	     <days>(system_time{-9h})});
         CHECK(1970_y/jan/ 1 == year_month_day{round	     <days>(system_time{-9h})});
         CHECK(1970_y/jan/ 1 == year_month_day{time_point_cast<days>(system_time{-9h})});
+    }
+}
+
+TEST_CASE("date-days arithmetic")
+{
+    CHECK(sys_days{2010_y/feb/28} + days(2) == 2010_y/mar/2);
+}
+
+TEST_CASE("stream time_point")
+{
+    std::stringstream str;
+    str << (sys_days{1986_y/sep/30} + 19h + 53min + 2s + 457ms);
+    CHECK(str.str() == "1986-09-30 19:53:02.457");
+}
+
+template<class duration_type>
+static duration_type calc_age(const year_month_day& today, const year_month_day& birth)
+{
+    return floor<duration_type>(
+               today.year()/today.month() -
+               birth.year()/birth.month() -
+               months{today.day() < birth.day()});
+}
+
+TEST_CASE("calc_age")
+{
+    using float_years = duration<double, years::period>;
+    auto today = sys_days{2015_y/aug/20};
+    const auto birth = sys_days{2010_y/aug/21};
+    {
+        const auto diff = today - birth;
+        CHECK(years{4} == calc_age     <years>(today, birth));
+        CHECK(years{4} == floor        <years>(diff));
+        CHECK(years{5} == round        <years>(diff));
+        CHECK(years{5} == ceil         <years>(diff));
+        CHECK(years{4} == duration_cast<years>(diff));
+        CHECK(float_years{4.996} .count() == Approx{float_years{diff} .count()} .epsilon(0.001));
+    }
+    today += days{1};
+    {
+        const auto diff = today - birth;
+        CHECK(years{5} == calc_age     <years>(today, birth));
+        CHECK(years{4} == floor        <years>(diff));
+        CHECK(years{5} == round        <years>(diff));
+        CHECK(years{5} == ceil         <years>(diff));
+        CHECK(years{4} == duration_cast<years>(diff));
+        CHECK(float_years{4.996} .count() == Approx{float_years{diff} .count()} .epsilon(0.001));
+    }
+    today += days{1};
+    {
+        const auto diff = today - birth;
+        CHECK(years{5} == calc_age     <years>(today, birth));
+        CHECK(years{5} == floor        <years>(diff));
+        CHECK(years{5} == round        <years>(diff));
+        CHECK(years{6} == ceil         <years>(diff));
+        CHECK(years{5} == duration_cast<years>(diff));
+        CHECK(float_years{5.002} .count() == Approx{float_years{diff} .count()} .epsilon(0.001));
     }
 }
 

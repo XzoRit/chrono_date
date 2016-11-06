@@ -35,6 +35,10 @@ TEST_CASE("no implicit loss of precision")
     // a = b;
     a = duration_cast<seconds>(b);
     CHECK(a == 1s);
+
+    using floating_secs = duration<double, seconds::period>;
+    const floating_secs c = b;
+    CHECK(c == floating_secs{1.5});
 }
 
 TEST_CASE("round durations")

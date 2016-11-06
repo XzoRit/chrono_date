@@ -39,24 +39,24 @@ TEST_CASE("no implicit loss of precision")
 
 TEST_CASE("round durations")
 {
-    CHECK( 1s == ceil 	    <seconds>( 750ms));
-    CHECK( 0s == floor	    <seconds>( 750ms));
-    CHECK( 1s == round	    <seconds>( 750ms));
+    CHECK( 1s == ceil 	      <seconds>( 750ms));
+    CHECK( 0s == floor	      <seconds>( 750ms));
+    CHECK( 1s == round	      <seconds>( 750ms));
     CHECK( 0s == duration_cast<seconds>( 750ms));
 
-    CHECK( 1s == ceil 	    <seconds>( 250ms));
-    CHECK( 0s == floor	    <seconds>( 250ms));
-    CHECK( 0s == round	    <seconds>( 250ms));
+    CHECK( 1s == ceil 	      <seconds>( 250ms));
+    CHECK( 0s == floor	      <seconds>( 250ms));
+    CHECK( 0s == round	      <seconds>( 250ms));
     CHECK( 0s == duration_cast<seconds>( 250ms));
 
-    CHECK( 0s == ceil 	    <seconds>(-750ms));
-    CHECK(-1s == floor	    <seconds>(-750ms));
-    CHECK(-1s == round	    <seconds>(-750ms));
+    CHECK( 0s == ceil 	      <seconds>(-750ms));
+    CHECK(-1s == floor	      <seconds>(-750ms));
+    CHECK(-1s == round	      <seconds>(-750ms));
     CHECK( 0s == duration_cast<seconds>(-750ms));
 
-    CHECK( 0s == ceil 	    <seconds>(-250ms));
-    CHECK(-1s == floor	    <seconds>(-250ms));
-    CHECK( 0s == round	    <seconds>(-250ms));
+    CHECK( 0s == ceil 	      <seconds>(-250ms));
+    CHECK(-1s == floor	      <seconds>(-250ms));
+    CHECK( 0s == round	      <seconds>(-250ms));
     CHECK( 0s == duration_cast<seconds>(-250ms));
 }
 
@@ -78,6 +78,17 @@ TEST_CASE("defining own durations")
     set_timeout(ceil <Tick>(300ms));
     set_timeout(floor<Tick>(300ms));
     set_timeout(round<Tick>(300ms));
+}
+
+TEST_CASE("time_points from clocks")
+{
+  const auto sysclk_tp = system_clock::now();
+  const auto stdclk_tp = steady_clock::now();
+
+  // time_points from different clocks are different types
+  // so this does not compile
+  // steady_clock::time_point a = system_clock::now();
+  // system_clock::time_point b = steady_clock::now();
 }
 
 template<class duration_type>

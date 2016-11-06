@@ -91,6 +91,14 @@ TEST_CASE("time_points from clocks")
   // system_clock::time_point b = steady_clock::now();
 }
 
+TEST_CASE("time_point arithmetic")
+{
+  auto a = steady_clock::now();
+  const auto b = a + 1h;
+  
+  CHECK((b - a) == 1h);
+}
+
 template<class duration_type>
 static duration_type calc_age(const year_month_day& today, const year_month_day& birth)
 {

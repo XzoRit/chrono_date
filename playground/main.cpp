@@ -106,8 +106,8 @@ TEST_CASE("time_point arithmetic")
 TEST_CASE("date creation")
 {
     const auto a = year_month_day{year{2010}, month{4}, day{12}};
-    const auto b = year{2010} / month{4} / day{12};
-    const auto c = 2010_y / apr / 12_d;
+    const auto b = year{2010}/month{4}/day{12};
+    const auto c = 2010_y/apr/12_d;
 
     CHECK(a == b);
     CHECK(a == c);
@@ -116,9 +116,9 @@ TEST_CASE("date creation")
 
 TEST_CASE("year-month-last")
 {
-    const auto a = 2000_y / feb / 29;
+    const auto a = 2000_y/feb/29;
     const auto b = year_month_day{year_month_day_last{2000_y, month_day_last{feb}}};
-    const auto c = 2000_y / feb / last;
+    const auto c = 2000_y/feb/last;
     
     CHECK(a == b);
     CHECK(a == c);
@@ -153,13 +153,18 @@ TEST_CASE("adding months")
             CHECK(carry_over == 2000_y/mar/1);
         }
     }
-    SECTION("+ months{2}")
+    SECTION("+/- months{2}")
     {
         auto ymd = 2000_y/jan/30 + months{2};
         CHECK(ymd == 2000_y/mar/30);
         ymd -= months{2};
         CHECK(ymd == 2000_y/jan/30);
     }
+}
+
+TEST_CASE("date-days arithmetic")
+{
+    CHECK(sys_days{2010_y/feb/28} + days(2) == 2010_y/mar/2);
 }
 
 TEST_CASE("floor, ceil, round, cast")
@@ -190,9 +195,13 @@ TEST_CASE("floor, ceil, round, cast")
     }
 }
 
-TEST_CASE("date-days arithmetic")
+TEST_CASE("weekday")
 {
-    CHECK(sys_days{2010_y/feb/28} + days(2) == 2010_y/mar/2);
+    const auto ymw = year_month_weekday{2000_y/jan/1};
+    CHECK(ymw.weekday() == sat);
+    CHECK(ymw.index() == 1);
+    CHECK(ymw == 2000_y/jan/sat[1]);
+    CHECK(sys_days{1999_y/dec/last} == sys_days{1999_y/dec/fri[last]});
 }
 
 TEST_CASE("stream time_point")
@@ -249,42 +258,43 @@ TEST_CASE("calc_age")
 
 TEST_CASE("date-time")
 {
+    const auto today = sys_days{1970_y/jan/1};
+
+    SECTION("date-days")
     {
-        auto tp = sys_days{1970_y/jan/3};
-        CHECK(tp.time_since_epoch() == days{2});
+        const auto tp = today + days{2};
+        CHECK(tp - today == days{2});
     }
+    SECTION("date-day-hours")
     {
-        auto tp = sys_days{1970_y/jan/3} + 7h;
-        CHECK(tp.time_since_epoch() == 55h);
+        const auto tp = today + days{2} + 7h;
+        CHECK(tp - today == 55h);
     }
+    SECTION("date-day-hours-minutes")
     {
-        auto tp = sys_days{1970_y/jan/3} + 7h + 33min;
-        CHECK(tp.time_since_epoch() == 3333min);
+        const auto tp = today + days{2} + 7h + 33min;
+        CHECK(tp - today == 3333min);
     }
+    SECTION("date-day-hours-minutes-seconds")
     {
-        auto tp = sys_days{1970_y/jan/3} + 7h + 33min + 20s;
-        CHECK(tp.time_since_epoch() == 200000s);
+        const auto tp = today + days{2} + 7h + 33min + 20s;
+        CHECK(tp - today == 200000s);
     }
+    SECTION("from serialbased to field based")
     {
-        const auto tp = sys_days{1970_y/jan/3} + 7h + 33min + 20s;
+        const auto tp = today + days{2} + 7h + 33min + 20s;
         const auto date = floor<days>(tp);
-        CHECK(date == 1970_y/jan/3);
-        const auto since_midnight = tp - date;
+
+	CHECK(date == 1970_y/jan/3);
+
+	const auto since_midnight = tp - date;
         CHECK(since_midnight == 27200s);
-        const auto time = make_time(since_midnight);
+
+	const auto time = make_time(since_midnight);
         CHECK(time.hours()   ==  7h);
         CHECK(time.minutes() == 33min);
         CHECK(time.seconds() == 20s);
     }
-}
-
-TEST_CASE("weekday")
-{
-    const auto ymw = year_month_weekday{2000_y/jan/1};
-    CHECK(ymw.weekday() == sat);
-    CHECK(ymw.index() == 1);
-    CHECK(ymw == 2000_y/jan/sat[1]);
-    CHECK(sys_days{1999_y/dec/last} == sys_days{1999_y/dec/fri[last]});
 }
 
 TEST_CASE("time of a day")

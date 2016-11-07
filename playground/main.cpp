@@ -86,38 +86,39 @@ TEST_CASE("defining own durations")
 
 TEST_CASE("time_points from clocks")
 {
-  const auto sysclk_tp = system_clock::now();
-  const auto stdclk_tp = steady_clock::now();
+    const auto sysclk_tp = system_clock::now();
+    const auto stdclk_tp = steady_clock::now();
 
-  // time_points from different clocks are different types
-  // so this does not compile
-  // steady_clock::time_point a = system_clock::now();
-  // system_clock::time_point b = steady_clock::now();
+    // time_points from different clocks are different types
+    // so this does not compile
+    // steady_clock::time_point a = system_clock::now();
+    // system_clock::time_point b = steady_clock::now();
 }
 
 TEST_CASE("time_point arithmetic")
 {
-  auto a = steady_clock::now();
-  const auto b = a + 1h;
-  
-  CHECK((b - a) == 1h);
+    auto a = steady_clock::now();
+    const auto b = a + 1h;
+
+    CHECK((b - a) == 1h);
 }
 
 TEST_CASE("date creation")
 {
-  const auto a = year_month_day{year{2010}, month{4}, day{12}};
-  const auto b = year{2010} / month{4} / day{12};
-  const auto c = 2010_y / apr / 12_d;
+    const auto a = year_month_day{year{2010}, month{4}, day{12}};
+    const auto b = year{2010} / month{4} / day{12};
+    const auto c = 2010_y / apr / 12_d;
 
-  CHECK(a == b);
-  CHECK(a == c);
-  CHECK(b == c);
+    CHECK(a == b);
+    CHECK(a == c);
+    CHECK(b == c);
 }
 
 TEST_CASE("year-month-last")
 {
     CHECK(2000_y/feb/29 ==
-	  year_month_day{
+          year_month_day
+    {
         year_month_day_last{
             2000_y, month_day_last{feb}}}));
     CHECK(2000_y/feb/29 == 2000_y/feb/last);

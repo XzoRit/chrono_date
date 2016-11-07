@@ -116,12 +116,13 @@ TEST_CASE("date creation")
 
 TEST_CASE("year-month-last")
 {
-    CHECK(2000_y/feb/29 ==
-          year_month_day
-    {
-        year_month_day_last{
-            2000_y, month_day_last{feb}}}));
-    CHECK(2000_y/feb/29 == 2000_y/feb/last);
+    const auto a = 2000_y / feb / 29;
+    const auto b = year_month_day{year_month_day_last{2000_y, month_day_last{feb}}};
+    const auto c = 2000_y / feb / last;
+    
+    CHECK(a == b);
+    CHECK(a == c);
+    CHECK(b == c);
 }
 
 TEST_CASE("adding months")

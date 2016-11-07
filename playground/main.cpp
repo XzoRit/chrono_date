@@ -346,14 +346,19 @@ TEST_CASE("from serialbased to field based")
     CHECK(time.seconds() == 20s);
 }
 
-TEST_CASE("get time zone string from zoned_time")
+TEST_CASE("local time with time zone")
 {
-    const auto zt =
-        make_zoned(
-            current_zone(),
-            local_days{2010_y/jan/28} + 11h + 39min + 38s);
-
-    CHECK(zt.get_info().abbrev == "CET");
+    const auto today = sys_days{2025_y/oct/3} + 17h + 43min + 23s;
+    SECTION("UTC")
+    {
+	const auto zt = make_zoned(today);
+	CHECK(zt.get_info().offset == 0s);
+	CHECK(zt.get_sys_time() == today);
+	// local_time and sys_time are different types
+	// this does not compile
+	// CHECK(zt.get_local_time() == today);
+	CHECK(zt.get_local_time() == local_days{2025_y/oct/3} + 17h + 43min + 23s);
+    }
 }
 
 TEST_CASE("zoned time from system time")
@@ -363,6 +368,16 @@ TEST_CASE("zoned time from system time")
     const auto zt = zoned_seconds{now_in_secs};
     CHECK(zt.get_sys_time() == now_in_secs);
     CHECK(zt.get_local_time() == local_seconds{now_in_secs.time_since_epoch()});
+}
+
+TEST_CASE("get time zone string from zoned_time")
+{
+    const auto zt =
+        make_zoned(
+            current_zone(),
+            local_days{2010_y/jan/28} + 11h + 39min + 38s);
+
+    CHECK(zt.get_info().abbrev == "CET");
 }
 
 TEST_CASE("local time arithmetic over daylight savings time")

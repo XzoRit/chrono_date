@@ -119,7 +119,7 @@ TEST_CASE("year-month-last")
     const auto a = 2000_y/feb/29;
     const auto b = year_month_day{year_month_day_last{2000_y, month_day_last{feb}}};
     const auto c = 2000_y/feb/last;
-    
+
     CHECK(a == b);
     CHECK(a == c);
     CHECK(b == c);
@@ -280,21 +280,6 @@ TEST_CASE("date-time")
         const auto tp = today + days{2} + 7h + 33min + 20s;
         CHECK(tp - today == 200000s);
     }
-    SECTION("from serialbased to field based")
-    {
-        const auto tp = today + days{2} + 7h + 33min + 20s;
-        const auto date = floor<days>(tp);
-
-	CHECK(date == 1970_y/jan/3);
-
-	const auto since_midnight = tp - date;
-        CHECK(since_midnight == 27200s);
-
-	const auto time = make_time(since_midnight);
-        CHECK(time.hours()   ==  7h);
-        CHECK(time.minutes() == 33min);
-        CHECK(time.seconds() == 20s);
-    }
 }
 
 TEST_CASE("time of a day")
@@ -310,7 +295,7 @@ TEST_CASE("time of a day")
 
 TEST_CASE("time of day with tick")
 {
-    using Tick = duration<int, std::ratio<1, 4>>;
+    using Tick = duration<int, ratio<1, 4>>;
     SECTION("two ticks")
     {
         const auto tick = Tick{2};
@@ -343,6 +328,22 @@ TEST_CASE("time of day with tick")
         str << hms;
         CHECK(str.str() == "00:00:00.250");
     }
+}
+
+TEST_CASE("from serialbased to field based")
+{
+    const auto tp = sys_days{1976_y/jan/11} + 7h + 33min + 20s;
+    const auto date = floor<days>(tp);
+
+    CHECK(date == 1976_y/jan/11);
+
+    const auto since_midnight = tp - date;
+    CHECK(since_midnight == 27200s);
+
+    const auto time = make_time(since_midnight);
+    CHECK(time.hours()   ==  7h);
+    CHECK(time.minutes() == 33min);
+    CHECK(time.seconds() == 20s);
 }
 
 TEST_CASE("get time zone string from zoned_time")

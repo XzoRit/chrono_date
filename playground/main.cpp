@@ -347,11 +347,11 @@ TEST_CASE("time of day with tick")
 TEST_CASE("from serialbased to field based")
 {
     const auto tp = sys_days{1976_y/jan/11} + 7h + 33min + 20s;
-    const auto date = floor<days>(tp);
+    const auto date = year_month_day{floor<days>(tp)};
 
     CHECK(date == 1976_y/jan/11);
 
-    const auto since_midnight = tp - date;
+    const auto since_midnight = tp - sys_days{date};
     CHECK(since_midnight == 27200s);
 
     const auto time = make_time(since_midnight);

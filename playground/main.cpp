@@ -41,6 +41,11 @@ TEST_CASE("no implicit loss of precision")
     CHECK(c == floating_secs{1.5});
 }
 
+// floor           <--------  <-------- <-------- <--------
+// ceil            -------->  --------> --------> -------->
+// duration_cast   -------->  --------> <-------- <--------
+// round           <------->  <-------> <-------> <------->
+//               -2.........-1.........0.........1.........2
 TEST_CASE("round durations")
 {
     CHECK( 1s == ceil 	      <seconds>( 750ms));

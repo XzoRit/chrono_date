@@ -119,6 +119,15 @@ TEST_CASE("date creation")
     CHECK(b == c);
 }
 
+TEST_CASE("date from today")
+{
+  const auto now = system_clock::now();
+  const auto now_days = sys_days{floor<days>(now)};
+  const auto today = year_month_day{now_days};
+
+  CHECK(today == floor<days>(system_clock::now()));
+}
+
 TEST_CASE("year-month-last")
 {
     const auto a = 2000_y/feb/29;

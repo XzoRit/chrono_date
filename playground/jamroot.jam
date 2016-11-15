@@ -11,7 +11,7 @@ lib curl
     : <name>curl
       <search>/opt/local/bin
     ;
-    
+
 exe chrono_date_playground
     : main.cpp
       ../date/tz.cpp

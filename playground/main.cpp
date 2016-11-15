@@ -98,6 +98,9 @@ TEST_CASE("time_points from clocks")
     // so this does not compile
     // steady_clock::time_point a = system_clock::now();
     // system_clock::time_point b = steady_clock::now();
+
+    static_cast<void>(sysclk_tp);
+    static_cast<void>(stdclk_tp);
 }
 
 TEST_CASE("time_point arithmetic")

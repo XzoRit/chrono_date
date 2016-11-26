@@ -41,11 +41,6 @@ TEST_CASE("no implicit loss of precision")
     CHECK(c == floating_secs{1.5});
 }
 
-// floor           <--------  <-------- <-------- <--------
-// ceil            -------->  --------> --------> -------->
-// duration_cast   -------->  --------> <-------- <--------
-// round           <------->  <-------> <-------> <------->
-//               -2.........-1.........0.........1.........2
 TEST_CASE("round durations")
 {
     CHECK( 1s == ceil 	      <seconds>( 750ms));
@@ -98,6 +93,15 @@ TEST_CASE("durations at compile time")
     static_assert(c == 5555ms);
 }
 
+// system_clock <.......0................................*...>
+//                      |<---------- duration ---------->|
+//                      |
+// epoch        (1970 / jan / 1) ?
+//
+// steady_clock <.......0............................*.......>
+//                      |<-------- duration -------->|
+//                      |
+// epoch            boot time
 TEST_CASE("time_points from clocks")
 {
     const auto sysclk_tp = system_clock::now();

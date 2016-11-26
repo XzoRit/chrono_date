@@ -89,6 +89,15 @@ TEST_CASE("defining own durations")
     set_timeout(round<Tick>(300ms));
 }
 
+TEST_CASE("durations at compile time")
+{
+    constexpr auto a = 5s;
+    constexpr auto b = 555ms;
+    constexpr auto c = a + b;
+
+    static_assert(c == 5555ms);
+}
+
 TEST_CASE("time_points from clocks")
 {
     const auto sysclk_tp = system_clock::now();
@@ -115,7 +124,7 @@ TEST_CASE("date creation")
 {
     const auto a = year_month_day{year{2010}, month{4}, day{12}};
     const auto b = year{2010}/month{4}/day{12};
-    const auto c = 2010_y/apr/12_d;
+    const auto c = 2010_y/apr/12;
 
     CHECK(a == b);
     CHECK(a == c);
@@ -134,7 +143,7 @@ TEST_CASE("date from today")
 TEST_CASE("year-month-last")
 {
     const auto a = 2000_y/feb/29;
-    const auto b = year_month_day{year_month_day_last{2000_y, month_day_last{feb}}};
+    const auto b = year_month_day_last{2000_y, month_day_last{feb}};
     const auto c = 2000_y/feb/last;
 
     CHECK(a == b);

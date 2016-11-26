@@ -127,8 +127,8 @@ TEST_CASE("time_point arithmetic")
 TEST_CASE("date creation")
 {
     const auto a = year_month_day{year{2010}, month{4}, day{12}};
-    const auto b = year{2010}/month{4}/day{12};
-    const auto c = 2010_y/apr/12;
+    const auto b = year{2010} / month{4} / day{12};
+    const auto c = 2010_y / apr / 12;
 
     CHECK(a == b);
     CHECK(a == c);
@@ -146,9 +146,9 @@ TEST_CASE("date from today")
 
 TEST_CASE("year-month-last")
 {
-    const auto a = 2000_y/feb/29;
+    const auto a = 2000_y / feb / 29;
     const auto b = year_month_day_last{2000_y, month_day_last{feb}};
-    const auto c = 2000_y/feb/last;
+    const auto c = 2000_y / feb / last;
 
     CHECK(a == b);
     CHECK(a == c);
@@ -159,42 +159,42 @@ TEST_CASE("adding months")
 {
     SECTION("+ months{1}")
     {
-        auto ymd = 2000_y/jan/30 + months{1};
-        CHECK(ymd == 2000_y/feb/30);
+        auto ymd = 2000_y / jan / 30 + months{1};
+        CHECK(ymd == 2000_y / feb / 30);
         CHECK_FALSE(ymd.ok());
         ymd -= months{1};
-        CHECK(ymd == 2000_y/jan/30);
+        CHECK(ymd == 2000_y / jan / 30);
     }
     SECTION("+ months{1} clamp")
     {
-        const auto ymd = 2000_y/jan/30 + months{1};
+        const auto ymd = 2000_y / jan / 30 + months{1};
         if(!ymd.ok())
         {
-            const auto clamp = ymd.year()/ymd.month()/last;
-            CHECK(clamp == 2000_y/feb/29);
+            const auto clamp = ymd.year() / ymd.month() / last;
+            CHECK(clamp == 2000_y / feb / 29);
         }
     }
     SECTION("+ months{1} carry over")
     {
-        const auto ymd = 2000_y/jan/30 + months{1};
+        const auto ymd = 2000_y / jan / 30 + months{1};
         if(!ymd.ok())
         {
             const auto carry_over = sys_days{ymd};
-            CHECK(carry_over == 2000_y/mar/1);
+            CHECK(carry_over == 2000_y / mar / 1);
         }
     }
     SECTION("+/- months{2}")
     {
-        auto ymd = 2000_y/jan/30 + months{2};
-        CHECK(ymd == 2000_y/mar/30);
+        auto ymd = 2000_y / jan / 30 + months{2};
+        CHECK(ymd == 2000_y / mar / 30);
         ymd -= months{2};
-        CHECK(ymd == 2000_y/jan/30);
+        CHECK(ymd == 2000_y / jan / 30);
     }
 }
 
 TEST_CASE("date-days arithmetic")
 {
-    CHECK(sys_days{2010_y/feb/28} + days(2) == 2010_y/mar/2);
+    CHECK(sys_days{2010_y / feb / 28} + days(2) == 2010_y / mar / 2);
 }
 
 TEST_CASE("floor, ceil, round, cast")
@@ -203,41 +203,41 @@ TEST_CASE("floor, ceil, round, cast")
     {
         using system_time = system_clock::time_point;
 
-        CHECK(1970_y/jan/2 == year_month_day{ceil 	    <days>(system_time{15h})});
-        CHECK(1970_y/jan/1 == year_month_day{floor	    <days>(system_time{15h})});
-        CHECK(1970_y/jan/2 == year_month_day{round	    <days>(system_time{15h})});
-        CHECK(1970_y/jan/1 == year_month_day{time_point_cast<days>(system_time{15h})});
+        CHECK(1970_y / jan / 2 == year_month_day{ceil 	    <days>(system_time{15h})});
+        CHECK(1970_y / jan / 1 == year_month_day{floor	    <days>(system_time{15h})});
+        CHECK(1970_y / jan / 2 == year_month_day{round	    <days>(system_time{15h})});
+        CHECK(1970_y / jan / 1 == year_month_day{time_point_cast<days>(system_time{15h})});
 
-        CHECK(1970_y/jan/2 == year_month_day{ceil 	    <days>(system_time{9h})});
-        CHECK(1970_y/jan/1 == year_month_day{floor	    <days>(system_time{9h})});
-        CHECK(1970_y/jan/1 == year_month_day{round	    <days>(system_time{9h})});
-        CHECK(1970_y/jan/1 == year_month_day{time_point_cast<days>(system_time{9h})});
+        CHECK(1970_y / jan / 2 == year_month_day{ceil 	    <days>(system_time{9h})});
+        CHECK(1970_y / jan / 1 == year_month_day{floor	    <days>(system_time{9h})});
+        CHECK(1970_y / jan / 1 == year_month_day{round	    <days>(system_time{9h})});
+        CHECK(1970_y / jan / 1 == year_month_day{time_point_cast<days>(system_time{9h})});
 
-        CHECK(1970_y/jan/ 1 == year_month_day{ceil 	     <days>(system_time{-15h})});
-        CHECK(1969_y/dec/31 == year_month_day{floor	     <days>(system_time{-15h})});
-        CHECK(1969_y/dec/31 == year_month_day{round	     <days>(system_time{-15h})});
-        CHECK(1970_y/jan/ 1 == year_month_day{time_point_cast<days>(system_time{-15h})});
+        CHECK(1970_y / jan /  1 == year_month_day{ceil 	     <days>(system_time{-15h})});
+        CHECK(1969_y / dec / 31 == year_month_day{floor	     <days>(system_time{-15h})});
+        CHECK(1969_y / dec / 31 == year_month_day{round	     <days>(system_time{-15h})});
+        CHECK(1970_y / jan /  1 == year_month_day{time_point_cast<days>(system_time{-15h})});
 
-        CHECK(1970_y/jan/ 1 == year_month_day{ceil 	     <days>(system_time{-9h})});
-        CHECK(1969_y/dec/31 == year_month_day{floor	     <days>(system_time{-9h})});
-        CHECK(1970_y/jan/ 1 == year_month_day{round	     <days>(system_time{-9h})});
-        CHECK(1970_y/jan/ 1 == year_month_day{time_point_cast<days>(system_time{-9h})});
+        CHECK(1970_y / jan /  1 == year_month_day{ceil 	     <days>(system_time{-9h})});
+        CHECK(1969_y / dec / 31 == year_month_day{floor	     <days>(system_time{-9h})});
+        CHECK(1970_y / jan /  1 == year_month_day{round	     <days>(system_time{-9h})});
+        CHECK(1970_y / jan /  1 == year_month_day{time_point_cast<days>(system_time{-9h})});
     }
 }
 
 TEST_CASE("weekday")
 {
-    const auto ymw = year_month_weekday{2000_y/jan/1};
+    const auto ymw = year_month_weekday{2000_y / jan / 1};
     CHECK(ymw.weekday() == sat);
     CHECK(ymw.index() == 1);
-    CHECK(ymw == 2000_y/jan/sat[1]);
-    CHECK(sys_days{1999_y/dec/last} == sys_days{1999_y/dec/fri[last]});
+    CHECK(ymw == 2000_y / jan / sat[1]);
+    CHECK(sys_days{1999_y / dec / last} == sys_days{1999_y / dec / fri[last]});
 }
 
 TEST_CASE("stream time_point")
 {
     std::stringstream str;
-    str << (sys_days{1986_y/sep/30} + 19h + 53min + 2s + 457ms);
+    str << (sys_days{1986_y / sep / 30} + 19h + 53min + 2s + 457ms);
     CHECK(str.str() == "1986-09-30 19:53:02.457");
 }
 
@@ -245,16 +245,16 @@ template<class duration_type>
 static duration_type calc_age(const year_month_day& today, const year_month_day& birth)
 {
     return floor<duration_type>(
-               today.year()/today.month() -
-               birth.year()/birth.month() -
+               today.year() / today.month() -
+               birth.year() / birth.month() -
                months{today.day() < birth.day()});
 }
 
 TEST_CASE("calc_age")
 {
     using float_years = duration<double, years::period>;
-    auto today = sys_days{2015_y/aug/20};
-    const auto birth = sys_days{2010_y/aug/21};
+    auto today = sys_days{2015_y / aug / 20};
+    const auto birth = sys_days{2010_y / aug / 21};
     {
         const auto diff = today - birth;
         CHECK(years{4} == calc_age     <years>(today, birth));
@@ -288,7 +288,7 @@ TEST_CASE("calc_age")
 
 TEST_CASE("date-time")
 {
-    const auto today = sys_days{1970_y/jan/1};
+    const auto today = sys_days{1970_y / jan / 1};
 
     SECTION("date-days")
     {
@@ -314,7 +314,7 @@ TEST_CASE("date-time")
 
 TEST_CASE("time of a day")
 {
-    const auto today = 1981_y/jan/9;
+    const auto today = 1981_y / jan / 9;
     const auto tp = sys_days{today} + 11h + 7min + 17s + 117ms;
     auto hms = make_time(tp - sys_days{today});
     CHECK(hms.hours() == 11h);
@@ -362,10 +362,10 @@ TEST_CASE("time of day with tick")
 
 TEST_CASE("from serialbased to field based")
 {
-    const auto tp = sys_days{1976_y/jan/11} + 7h + 33min + 20s;
+    const auto tp = sys_days{1976_y / jan / 11} + 7h + 33min + 20s;
     const auto date = year_month_day{floor<days>(tp)};
 
-    CHECK(date == 1976_y/jan/11);
+    CHECK(date == 1976_y / jan / 11);
 
     const auto since_midnight = tp - sys_days{date};
     CHECK(since_midnight == 27200s);
@@ -378,7 +378,7 @@ TEST_CASE("from serialbased to field based")
 
 TEST_CASE("local time with time zone")
 {
-    const auto today = sys_days{2025_y/oct/3} + 17h + 43min + 23s;
+    const auto today = sys_days{2025_y / oct / 3} + 17h + 43min + 23s;
     SECTION("UTC")
     {
 	const auto zt = make_zoned(today);
@@ -387,7 +387,7 @@ TEST_CASE("local time with time zone")
 	// local_time and sys_time are different types
 	// this does not compile
 	// CHECK(zt.get_local_time() == today);
-	CHECK(zt.get_local_time() == local_days{2025_y/oct/3} + 17h + 43min + 23s);
+	CHECK(zt.get_local_time() == local_days{2025_y / oct / 3} + 17h + 43min + 23s);
     }
 }
 
@@ -405,7 +405,7 @@ TEST_CASE("get time zone string from zoned_time")
     const auto zt =
         make_zoned(
             current_zone(),
-            local_days{2010_y/jan/28} + 11h + 39min + 38s);
+            local_days{2010_y / jan / 28} + 11h + 39min + 38s);
 
     CHECK(zt.get_info().abbrev == "CET");
 }
@@ -415,18 +415,18 @@ TEST_CASE("local time arithmetic over daylight savings time")
     const auto before_ds_time =
         make_zoned(
             "Europe/Berlin",
-            local_days{2016_y/mar/sat[last]} + 9h);
+            local_days{2016_y / mar / sat[last]} + 9h);
 
-    CHECK(before_ds_time.get_sys_time()   == sys_days  {2016_y/mar/sat[last]} + 8h);
-    CHECK(before_ds_time.get_local_time() == local_days{2016_y/mar/sat[last]} + 9h);
+    CHECK(before_ds_time.get_sys_time()   == sys_days  {2016_y / mar / sat[last]} + 8h);
+    CHECK(before_ds_time.get_local_time() == local_days{2016_y / mar / sat[last]} + 9h);
 
     const auto after_ds_time =
         make_zoned(
             "Europe/Berlin",
             before_ds_time.get_local_time() + days{1});
 
-    CHECK(after_ds_time.get_sys_time()   == sys_days  {2016_y/mar/sun[last]} + 7h);
-    CHECK(after_ds_time.get_local_time() == local_days{2016_y/mar/sun[last]} + 9h);
+    CHECK(after_ds_time.get_sys_time()   == sys_days  {2016_y / mar / sun[last]} + 7h);
+    CHECK(after_ds_time.get_local_time() == local_days{2016_y / mar / sun[last]} + 9h);
 }
 
 TEST_CASE("nonexistent and ambiguous local time")
@@ -434,7 +434,7 @@ TEST_CASE("nonexistent and ambiguous local time")
     SECTION("summer time")
     {
         const auto never_existed =
-            static_cast<local_days>(2016_y/mar/sun[last]) + 2h + 30min;
+            static_cast<local_days>(2016_y / mar / sun[last]) + 2h + 30min;
         CHECK_THROWS_AS(
             make_zoned(
                 "Europe/Berlin",
@@ -446,19 +446,19 @@ TEST_CASE("nonexistent and ambiguous local time")
                 never_existed,
                 choose::earliest).get_local_time()
             ==
-            static_cast<local_days>(2016_y/mar/sun[last]) + 3h);
+            static_cast<local_days>(2016_y / mar / sun[last]) + 3h);
         CHECK(
             make_zoned(
                 "Europe/Berlin",
                 never_existed,
                 choose::latest).get_local_time()
             ==
-            static_cast<local_days>(2016_y/mar/sun[last]) + 3h);
+            static_cast<local_days>(2016_y / mar / sun[last]) + 3h);
     }
     SECTION("winter time")
     {
         const auto existed_twice =
-            static_cast<local_days>(2016_y/oct/sun[last]) + 2h + 30min;
+            static_cast<local_days>(2016_y / oct / sun[last]) + 2h + 30min;
         CHECK_THROWS_AS(
             make_zoned(
                 "Europe/Berlin",
@@ -470,13 +470,13 @@ TEST_CASE("nonexistent and ambiguous local time")
                 existed_twice,
                 choose::earliest).get_local_time()
             ==
-            static_cast<local_days>(2016_y/oct/sun[last]) + 2h + 30min);
+            static_cast<local_days>(2016_y / oct / sun[last]) + 2h + 30min);
         CHECK(
             make_zoned(
                 "Europe/Berlin",
                 existed_twice,
                 choose::latest).get_local_time()
             ==
-            static_cast<local_days>(2016_y/oct/sun[last]) + 2h + 30min);
+            static_cast<local_days>(2016_y / oct / sun[last]) + 2h + 30min);
     }
 }

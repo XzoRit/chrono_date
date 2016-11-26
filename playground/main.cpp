@@ -126,13 +126,14 @@ TEST_CASE("time_point arithmetic")
 
 TEST_CASE("date creation")
 {
-    const auto a = year_month_day{year{2010}, month{4}, day{12}};
-    const auto b = year{2010} / month{4} / day{12};
-    const auto c = 2010_y / apr / 12;
+    const auto a = year_month_day{year{2010},   month{4},  day{12}};
+    const auto b =                year{2010}  / month{4} / day{12};
+    const auto c =                     2010_y /   apr    /     12_d;
+    const auto d =                     2010_y /   apr    /     12;
 
     CHECK(a == b);
-    CHECK(a == c);
     CHECK(b == c);
+    CHECK(c == d);
 }
 
 TEST_CASE("date from today")

@@ -138,11 +138,11 @@ TEST_CASE("date creation")
 
 TEST_CASE("date from today")
 {
-  const auto now = system_clock::now();
-  const auto now_days = sys_days{floor<days>(now)};
-  const auto today = year_month_day{now_days};
+    const auto now      = system_clock::now();
+    const auto now_days = sys_days{floor<days>(now)};
+    const auto today    = year_month_day{now_days};
 
-  CHECK(today == floor<days>(system_clock::now()));
+    CHECK(today == floor<days>(system_clock::now()));
 }
 
 TEST_CASE("year-month-last")
@@ -324,7 +324,7 @@ TEST_CASE("time of a day")
     CHECK(hms.subseconds() == 117ms);
 }
 
-TEST_CASE("time of day with tick")
+TEST_CASE("format time of day with tick duration")
 {
     using Tick = duration<int, ratio<1, 4>>;
     SECTION("two ticks")
@@ -365,13 +365,9 @@ TEST_CASE("from serialbased to field based")
 {
     const auto tp = sys_days{1976_y / jan / 11} + 7h + 33min + 20s;
     const auto date = year_month_day{floor<days>(tp)};
+    const auto time = make_time(tp - sys_days{date});
 
     CHECK(date == 1976_y / jan / 11);
-
-    const auto since_midnight = tp - sys_days{date};
-    CHECK(since_midnight == 27200s);
-
-    const auto time = make_time(since_midnight);
     CHECK(time.hours()   ==  7h);
     CHECK(time.minutes() == 33min);
     CHECK(time.seconds() == 20s);
@@ -382,13 +378,13 @@ TEST_CASE("local time with time zone")
     const auto today = sys_days{2025_y / oct / 3} + 17h + 43min + 23s;
     SECTION("UTC")
     {
-	const auto zt = make_zoned(today);
-	CHECK(zt.get_info().offset == 0s);
-	CHECK(zt.get_sys_time() == today);
-	// local_time and sys_time are different types
-	// this does not compile
-	// CHECK(zt.get_local_time() == today);
-	CHECK(zt.get_local_time() == local_days{2025_y / oct / 3} + 17h + 43min + 23s);
+        const auto zt = make_zoned(today);
+        CHECK(zt.get_info().offset == 0s);
+        CHECK(zt.get_sys_time() == today);
+        // local_time and sys_time are different types
+        // this does not compile
+        // CHECK(zt.get_local_time() == today);
+        CHECK(zt.get_local_time() == local_days{2025_y / oct / 3} + 17h + 43min + 23s);
     }
 }
 
@@ -479,5 +475,50 @@ TEST_CASE("nonexistent and ambiguous local time")
                 choose::latest).get_local_time()
             ==
             static_cast<local_days>(2016_y / oct / sun[last]) + 2h + 30min);
+    }
+}
+
+// taken from https://howardhinnant.github.io/date/tz.html#Examples
+TEST_CASE("flight duration")
+{
+    const auto flight_length = 14h + 44min;
+    SECTION("in the utc system")
+    {
+	// By doing the arithmetic (addition of the flight time) in the UTC time zone,
+	// we do not have to worry about things like daylight savings time,
+	// or other political changes to the either UTC offset.
+        const auto departure =
+            make_zoned("America/New_York", local_days{1978_y / dec / 30} + 12h + 1min);
+        const auto arrival =
+            make_zoned("Asia/Tehran"     , departure.get_sys_time() + flight_length);
+
+        CHECK(arrival.get_local_time() == local_days{1978_y / dec / 31} + 11h + 45min);
+    }
+    SECTION("one day later")
+    {
+	// Now we have the flight arriving 30min earlier.
+	// This is because the time zone "Asia/Tehran" undergoes an offset change
+	// while the plane is in the air, shifting its UTC offset to 30min earlier.
+        const auto departure =
+            make_zoned("America/New_York", local_days{1978_y / dec / 31} + 12h + 1min);
+        const auto arrival =
+            make_zoned("Asia/Tehran"     , departure.get_sys_time() + flight_length);
+
+        CHECK(arrival.get_local_time() == local_days{1979_y / jan / 1} + 11h + 15min);
+    }
+    SECTION("accuracy down to the second")
+    {
+	// If accuracy down to the second is required,
+	// then additional effort needs to be expended.
+	// Because there was also a leap second insertion while the plane was in the air.
+        const auto departure =
+            make_zoned("America/New_York", local_days{1978_y / dec / 31} + 12h + 1min);
+	const auto departure_utc = to_utc_time(departure.get_sys_time());
+        const auto arrival =
+            make_zoned("Asia/Tehran"     , to_sys_time(departure_utc + flight_length));
+	    // similar but different
+            // make_zoned("Asia/Tehran"     , to_sys_time(departure_utc) + flight_length);
+
+        CHECK(arrival.get_local_time() == local_days{1979_y / jan / 1} + 11h + 14min + 59s);
     }
 }

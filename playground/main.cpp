@@ -161,6 +161,57 @@ TEST_CASE("year-month-last")
     CHECK(b == c);
 }
 
+/*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                |    +months(y)   |    +months(y)   |    +months{y}
+2000 / jan / 30 | xxxx / xxx / xx | xxxx / xxx / xx | xxxx / xxx / xx 
+2000 / jan / 30 | xxxx / xxx / xx | xxxx / xxx / xx | xxxx / xxx / xx 
+2000 / jan / 30 | xxxx / xxx / xx | xxxx / xxx / xx | xxxx / xxx / xx 
+2000 / jan / 30 | xxxx / xxx / xx | xxxx / xxx / xx | xxxx / xxx / xx 
+2000 / jan / 30 | xxxx / xxx / xx | xxxx / xxx / xx | xxxx / xxx / xx 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*/
 TEST_CASE("adding months")
 {
     SECTION("+ months{1}")
@@ -176,7 +227,7 @@ TEST_CASE("adding months")
         const auto ymd = 2000_y / jan / 30 + months{1};
         if(!ymd.ok())
         {
-            const auto clamp = ymd.year() / ymd.month() / last;
+            const auto clamp = ymd.year() / ymd.month() / last
             CHECK(clamp == 2000_y / feb / 29);
         }
     }

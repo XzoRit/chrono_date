@@ -180,12 +180,11 @@ TEST_CASE("year-month-last")
 
 
 
-                |    +months(y)   |    +months(y)   |    +months{y}
-2000 / jan / 30 | xxxx / xxx / xx | xxxx / xxx / xx | xxxx / xxx / xx 
-2000 / jan / 30 | xxxx / xxx / xx | xxxx / xxx / xx | xxxx / xxx / xx 
-2000 / jan / 30 | xxxx / xxx / xx | xxxx / xxx / xx | xxxx / xxx / xx 
-2000 / jan / 30 | xxxx / xxx / xx | xxxx / xxx / xx | xxxx / xxx / xx 
-2000 / jan / 30 | xxxx / xxx / xx | xxxx / xxx / xx | xxxx / xxx / xx 
+                |    +months(1)   |    +months(1)   |    -months{2}
+2000 / jan / 30 | exception
+2000 / jan / 30 | 2000 / feb / 29 | 2000 / mar / 31 | 2000 / jan / 31
+2000 / jan / 30 | 2000 / mar / 01 | 2000 / apr / 01 | 2000 / feb / 01
+
 
 
 

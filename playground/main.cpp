@@ -48,24 +48,24 @@ TEST_CASE("no implicit loss of precision")
 //               -2.........-1.........0.........1.........2
 TEST_CASE("round durations")
 {
-    CHECK( 1s == ceil 	      <seconds>( 750ms));
-    CHECK( 0s == floor	      <seconds>( 750ms));
-    CHECK( 1s == round	      <seconds>( 750ms));
+    CHECK( 1s == ceil         <seconds>( 750ms));
+    CHECK( 0s == floor        <seconds>( 750ms));
+    CHECK( 1s == round        <seconds>( 750ms));
     CHECK( 0s == duration_cast<seconds>( 750ms));
 
-    CHECK( 1s == ceil 	      <seconds>( 250ms));
-    CHECK( 0s == floor	      <seconds>( 250ms));
-    CHECK( 0s == round	      <seconds>( 250ms));
+    CHECK( 1s == ceil         <seconds>( 250ms));
+    CHECK( 0s == floor        <seconds>( 250ms));
+    CHECK( 0s == round        <seconds>( 250ms));
     CHECK( 0s == duration_cast<seconds>( 250ms));
 
-    CHECK( 0s == ceil 	      <seconds>(-750ms));
-    CHECK(-1s == floor	      <seconds>(-750ms));
-    CHECK(-1s == round	      <seconds>(-750ms));
+    CHECK( 0s == ceil         <seconds>(-750ms));
+    CHECK(-1s == floor        <seconds>(-750ms));
+    CHECK(-1s == round        <seconds>(-750ms));
     CHECK( 0s == duration_cast<seconds>(-750ms));
 
-    CHECK( 0s == ceil 	      <seconds>(-250ms));
-    CHECK(-1s == floor	      <seconds>(-250ms));
-    CHECK( 0s == round	      <seconds>(-250ms));
+    CHECK( 0s == ceil         <seconds>(-250ms));
+    CHECK(-1s == floor        <seconds>(-250ms));
+    CHECK( 0s == round        <seconds>(-250ms));
     CHECK( 0s == duration_cast<seconds>(-250ms));
 }
 
@@ -226,7 +226,7 @@ TEST_CASE("adding months")
         const auto ymd = 2000_y / jan / 30 + months{1};
         if(!ymd.ok())
         {
-	    const auto clamp = ymd.year() / ymd.month() / last;
+            const auto clamp = ymd.year() / ymd.month() / last;
             CHECK(clamp == 2000_y / feb / 29);
         }
     }
@@ -259,24 +259,24 @@ TEST_CASE("floor, ceil, round, cast")
     {
         using system_time = system_clock::time_point;
 
-        CHECK(1970_y / jan / 2 == year_month_day{ceil 	    <days>(system_time{15h})});
-        CHECK(1970_y / jan / 1 == year_month_day{floor	    <days>(system_time{15h})});
-        CHECK(1970_y / jan / 2 == year_month_day{round	    <days>(system_time{15h})});
+        CHECK(1970_y / jan / 2 == year_month_day{ceil       <days>(system_time{15h})});
+        CHECK(1970_y / jan / 1 == year_month_day{floor      <days>(system_time{15h})});
+        CHECK(1970_y / jan / 2 == year_month_day{round      <days>(system_time{15h})});
         CHECK(1970_y / jan / 1 == year_month_day{time_point_cast<days>(system_time{15h})});
 
-        CHECK(1970_y / jan / 2 == year_month_day{ceil 	    <days>(system_time{9h})});
-        CHECK(1970_y / jan / 1 == year_month_day{floor	    <days>(system_time{9h})});
-        CHECK(1970_y / jan / 1 == year_month_day{round	    <days>(system_time{9h})});
+        CHECK(1970_y / jan / 2 == year_month_day{ceil       <days>(system_time{9h})});
+        CHECK(1970_y / jan / 1 == year_month_day{floor      <days>(system_time{9h})});
+        CHECK(1970_y / jan / 1 == year_month_day{round      <days>(system_time{9h})});
         CHECK(1970_y / jan / 1 == year_month_day{time_point_cast<days>(system_time{9h})});
 
-        CHECK(1970_y / jan /  1 == year_month_day{ceil 	     <days>(system_time{-15h})});
-        CHECK(1969_y / dec / 31 == year_month_day{floor	     <days>(system_time{-15h})});
-        CHECK(1969_y / dec / 31 == year_month_day{round	     <days>(system_time{-15h})});
+        CHECK(1970_y / jan /  1 == year_month_day{ceil           <days>(system_time{-15h})});
+        CHECK(1969_y / dec / 31 == year_month_day{floor          <days>(system_time{-15h})});
+        CHECK(1969_y / dec / 31 == year_month_day{round          <days>(system_time{-15h})});
         CHECK(1970_y / jan /  1 == year_month_day{time_point_cast<days>(system_time{-15h})});
 
-        CHECK(1970_y / jan /  1 == year_month_day{ceil 	     <days>(system_time{-9h})});
-        CHECK(1969_y / dec / 31 == year_month_day{floor	     <days>(system_time{-9h})});
-        CHECK(1970_y / jan /  1 == year_month_day{round	     <days>(system_time{-9h})});
+        CHECK(1970_y / jan /  1 == year_month_day{ceil           <days>(system_time{-9h})});
+        CHECK(1969_y / dec / 31 == year_month_day{floor          <days>(system_time{-9h})});
+        CHECK(1970_y / jan /  1 == year_month_day{round          <days>(system_time{-9h})});
         CHECK(1970_y / jan /  1 == year_month_day{time_point_cast<days>(system_time{-9h})});
     }
 }
@@ -539,9 +539,9 @@ TEST_CASE("flight duration")
     const auto flight_length = 14h + 44min;
     SECTION("in the utc system")
     {
-	// By doing the arithmetic (addition of the flight time) in the UTC time zone,
-	// we do not have to worry about things like daylight savings time,
-	// or other political changes to the either UTC offset.
+        // By doing the arithmetic (addition of the flight time) in the UTC time zone,
+        // we do not have to worry about things like daylight savings time,
+        // or other political changes to the either UTC offset.
         const auto departure =
             make_zoned("America/New_York", local_days{1978_y / dec / 30} + 12h + 1min);
         const auto arrival =
@@ -551,9 +551,9 @@ TEST_CASE("flight duration")
     }
     SECTION("one day later")
     {
-	// Now we have the flight arriving 30min earlier.
-	// This is because the time zone "Asia/Tehran" undergoes an offset change
-	// while the plane is in the air, shifting its UTC offset to 30min earlier.
+        // Now we have the flight arriving 30min earlier.
+        // This is because the time zone "Asia/Tehran" undergoes an offset change
+        // while the plane is in the air, shifting its UTC offset to 30min earlier.
         const auto departure =
             make_zoned("America/New_York", local_days{1978_y / dec / 31} + 12h + 1min);
         const auto arrival =
@@ -563,16 +563,16 @@ TEST_CASE("flight duration")
     }
     SECTION("accuracy down to the second")
     {
-	// If accuracy down to the second is required,
-	// then additional effort needs to be expended.
-	// Because there was also a leap second insertion while the plane was in the air.
+        // If accuracy down to the second is required,
+        // then additional effort needs to be expended.
+        // Because there was also a leap second insertion while the plane was in the air.
         const auto departure =
             make_zoned("America/New_York", local_days{1978_y / dec / 31} + 12h + 1min);
-	const auto departure_utc = to_utc_time(departure.get_sys_time());
+        const auto departure_utc = to_utc_time(departure.get_sys_time());
         const auto arrival =
             make_zoned("Asia/Tehran"     , to_sys_time(departure_utc + flight_length));
-	    // similar but different
-            // make_zoned("Asia/Tehran"     , to_sys_time(departure_utc) + flight_length);
+        // similar but different
+        //  make_zoned("Asia/Tehran"     , to_sys_time(departure_utc) + flight_length);
 
         CHECK(arrival.get_local_time() == local_days{1979_y / jan / 1} + 11h + 14min + 59s);
     }

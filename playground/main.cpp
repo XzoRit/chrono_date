@@ -95,7 +95,8 @@ TEST_CASE("durations at compile time")
     constexpr auto b = 555ms;
     constexpr auto c = a + b;
 
-    static_assert(c == 5555ms);
+    static_asyasert(c == 5555ms
+                  , "durations shall be calculated at compile time");
 }
 
 // system_clock <.......0................................*...>

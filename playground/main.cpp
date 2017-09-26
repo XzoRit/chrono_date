@@ -534,6 +534,46 @@ TEST_CASE("nonexistent and ambiguous local time")
     }
 }
 
+TEST_CASE("nonexistent and ambiguous israel local time")
+{
+    SECTION("std -> dst")
+    {
+        const auto dst_begin = static_cast<local_days>(2020_y / mar / 27) + 3h;
+        const auto zoned_tp = make_zoned("Asia/Jerusalem", dst_begin);
+        const auto tz = zoned_tp.get_time_zone();
+
+        CHECK(tz->get_info(dst_begin + 1s).result == local_info::unique);
+        CHECK(tz->get_info(dst_begin + 30min).result == local_info::unique);
+        CHECK(tz->get_info(dst_begin + 1h).result == local_info::unique);
+        CHECK(tz->get_info(dst_begin + 1h + 1s).result == local_info::unique);
+
+        CHECK(tz->get_info(dst_begin).result == local_info::unique);
+
+        CHECK(tz->get_info(dst_begin - 1s).result == local_info::nonexistent);
+        CHECK(tz->get_info(dst_begin - 30min).result == local_info::nonexistent);
+        CHECK(tz->get_info(dst_begin - 1h).result == local_info::nonexistent);
+        CHECK(tz->get_info(dst_begin - 1h - 1s).result == local_info::unique);
+    }
+    SECTION("dst -> std")
+    {
+        const auto std_begin = static_cast<local_days>(2020_y / oct / 25) + 1h;
+        const auto zoned_tp = make_zoned("Asia/Jerusalem", std_begin - 1s);
+        const auto tz = zoned_tp.get_time_zone();
+
+        CHECK(tz->get_info(std_begin + 1s).result == local_info::ambiguous);
+        CHECK(tz->get_info(std_begin + 30min).result == local_info::ambiguous);
+        CHECK(tz->get_info(std_begin + 1h).result == local_info::unique);
+        CHECK(tz->get_info(std_begin + 1h + 1s).result == local_info::unique);
+
+        CHECK(tz->get_info(std_begin).result == local_info::ambiguous);
+
+        CHECK(tz->get_info(std_begin - 1s).result == local_info::unique);
+        CHECK(tz->get_info(std_begin - 30min).result == local_info::unique);
+        CHECK(tz->get_info(std_begin - 1h).result == local_info::unique);
+        CHECK(tz->get_info(std_begin - 1h - 1s).result == local_info::unique);
+    }
+}
+
 // taken from https://howardhinnant.github.io/date/tz.html#Examples
 TEST_CASE("flight duration")
 {

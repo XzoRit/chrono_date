@@ -539,20 +539,24 @@ TEST_CASE("nonexistent and ambiguous israel local time")
     SECTION("std -> dst")
     {
         const auto dst_begin = static_cast<local_days>(2020_y / mar / 27) + 3h;
+        const auto std_begin = static_cast<local_days>(2020_y / oct / 24) + 1h;
         const auto zoned_tp = make_zoned("Asia/Jerusalem", dst_begin);
         const auto tz = zoned_tp.get_time_zone();
 
-        CHECK(tz->get_info(dst_begin + 1s).result == local_info::unique);
-        CHECK(tz->get_info(dst_begin + 30min).result == local_info::unique);
-        CHECK(tz->get_info(dst_begin + 1h).result == local_info::unique);
+        CHECK(tz->get_info(dst_begin - 1h - 1s).result == local_info::unique);
+        CHECK(tz->get_info(dst_begin - 1h     ).result == local_info::nonexistent);
+        CHECK(tz->get_info(dst_begin      - 1s).result == local_info::nonexistent);
+        CHECK(tz->get_info(dst_begin          ).result == local_info::unique);
+        CHECK(tz->get_info(dst_begin      + 1s).result == local_info::unique);
+        CHECK(tz->get_info(dst_begin + 1h - 1s).result == local_info::unique);
+        CHECK(tz->get_info(dst_begin + 1h     ).result == local_info::unique);
         CHECK(tz->get_info(dst_begin + 1h + 1s).result == local_info::unique);
 
-        CHECK(tz->get_info(dst_begin).result == local_info::unique);
+        CHECK(tz->to_sys(dst_begin) == tz->to_sys(dst_begin - 1h, date::choose::latest));
+        CHECK(tz->to_sys(dst_begin) == tz->to_sys(dst_begin - 1h, date::choose::earliest));
 
-        CHECK(tz->get_info(dst_begin - 1s).result == local_info::nonexistent);
-        CHECK(tz->get_info(dst_begin - 30min).result == local_info::nonexistent);
-        CHECK(tz->get_info(dst_begin - 1h).result == local_info::nonexistent);
-        CHECK(tz->get_info(dst_begin - 1h - 1s).result == local_info::unique);
+        CHECK(tz->to_sys(dst_begin) == tz->to_sys(dst_begin - 1s, date::choose::latest));
+        CHECK(tz->to_sys(dst_begin) == tz->to_sys(dst_begin - 1s, date::choose::earliest));
     }
     SECTION("dst -> std")
     {
@@ -560,17 +564,27 @@ TEST_CASE("nonexistent and ambiguous israel local time")
         const auto zoned_tp = make_zoned("Asia/Jerusalem", std_begin - 1s);
         const auto tz = zoned_tp.get_time_zone();
 
-        CHECK(tz->get_info(std_begin + 1s).result == local_info::ambiguous);
-        CHECK(tz->get_info(std_begin + 30min).result == local_info::ambiguous);
-        CHECK(tz->get_info(std_begin + 1h).result == local_info::unique);
+        CHECK(tz->get_info(std_begin - 1h - 1s).result == local_info::unique);
+        CHECK(tz->get_info(std_begin - 1h     ).result == local_info::unique);
+        CHECK(tz->get_info(std_begin - 1h + 1s).result == local_info::unique);
+        CHECK(tz->get_info(std_begin - 1s     ).result == local_info::unique);
+        CHECK(tz->get_info(std_begin          ).result == local_info::ambiguous);
+        CHECK(tz->get_info(std_begin + 1s     ).result == local_info::ambiguous);
+        CHECK(tz->get_info(std_begin + 1h - 1s).result == local_info::ambiguous);
+        CHECK(tz->get_info(std_begin + 1h     ).result == local_info::unique);
         CHECK(tz->get_info(std_begin + 1h + 1s).result == local_info::unique);
 
-        CHECK(tz->get_info(std_begin).result == local_info::ambiguous);
+        const auto sys_std_begin_late  = sys_days{2020_y / oct / 24} + 23h;
+        const auto sys_std_begin_early = sys_days{2020_y / oct / 24} + 22h;
 
-        CHECK(tz->get_info(std_begin - 1s).result == local_info::unique);
-        CHECK(tz->get_info(std_begin - 30min).result == local_info::unique);
-        CHECK(tz->get_info(std_begin - 1h).result == local_info::unique);
-        CHECK(tz->get_info(std_begin - 1h - 1s).result == local_info::unique);
+        CHECK(sys_std_begin_late            == tz->to_sys(std_begin          , date::choose::latest));
+        CHECK(sys_std_begin_early           == tz->to_sys(std_begin          , date::choose::earliest));
+
+        CHECK(sys_std_begin_late  + 1s      == tz->to_sys(std_begin + 1s     , date::choose::latest));
+        CHECK(sys_std_begin_early + 1s      == tz->to_sys(std_begin + 1s     , date::choose::earliest));
+
+        CHECK(sys_std_begin_late  + 1h - 1s == tz->to_sys(std_begin + 1h - 1s, date::choose::latest));
+        CHECK(sys_std_begin_early + 1h - 1s == tz->to_sys(std_begin + 1h - 1s, date::choose::earliest));
     }
 }
 

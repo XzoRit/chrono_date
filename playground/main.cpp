@@ -1,8 +1,8 @@
 #define CATCH_CONFIG_COLOUR_NONE
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
-#include <date.h>
-#include <tz.h>
+#include <date/date.h>
+#include <date/tz.h>
 #include <chrono>
 #include <sstream>
 
@@ -389,7 +389,7 @@ TEST_CASE("format time of day with tick duration")
         const auto hms = make_time(tick);
         std::stringstream str;
         str << hms;
-        CHECK(str.str() == "00:00:00.5");
+        CHECK(str.str() == "00:00:00.50");
     }
     SECTION("one tick")
     {
@@ -397,7 +397,7 @@ TEST_CASE("format time of day with tick duration")
         const auto hms = make_time(tick);
         std::stringstream str;
         str << hms;
-        CHECK(str.str() == "00:00:00.2");
+        CHECK(str.str() == "00:00:00.25");
     }
     SECTION("one tick with centi format")
     {

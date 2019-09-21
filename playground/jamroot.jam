@@ -2,8 +2,6 @@ project
     : default-build debug
     : build-dir ./build
     : requirements <cxxflags>-std=c++1z
-      <warnings>all
-      <warnings-as-errors>on
     ;
 
 lib curl
@@ -13,11 +11,11 @@ lib curl
 
 exe chrono_date_playground
     : main.cpp
-      ../date/tz.cpp
+      ../date/src/tz.cpp
       curl
     :
     : <include>../Catch/single_include
-      <include>../date
+      <include>../date/include
     ;
 
 import testing ;
